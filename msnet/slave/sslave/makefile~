@@ -1,0 +1,17 @@
+main: 
+	
+mktemp: main.c analog.c analog.h slave.h spi_slave.c spi_slave.h ttemp_slave.c
+	avr-gcc -Os -D_SLAVE_TTEMP_ -mmcu=attiny84 \
+	-DF_CPU=8000000 -o main main.c analog.c spi_slave.c
+
+mkdummy: main.c analog.c analog.h slave.h spi_slave.c spi_slave.h dummy_slave.c
+	avr-gcc -Os -D_SLAVE_DUMMY_ -mmcu=attiny84 \
+	-DF_CPU=8000000 -o main main.c analog.c spi_slave.c
+	
+temp: mktemp
+	avr-objcopy -O ihex -R .eeprom main main.bin
+	avrdude -p t84 -c usbtiny -U flash:w:main.bin
+	
+dummy: mkdummy
+	avr-objcopy -O ihex -R .eeprom main main.bin
+	avrdude -p t84 -c usbtiny -U flash:w:main.bin
