@@ -46,7 +46,7 @@ class rt:
             s = rt_pkt(parms=rp).raw
 
     def _ack(self, pkt):
-        print("ACKing %04x/%d.%d" % (pkt['slave'], pkt['pkg_no'], pkt['seg_no']))
+        #print("ACKing %04x/%d.%d" % (pkt['slave'], pkt['pkg_no'], pkt['seg_no']))
         self._send(pkt['slave'], rt.ptype['ACK'], pkt['pkg_no'], 1, pkt['seg_no'], "")
     
     def send(self, dest, pkg_type, payload):
@@ -67,7 +67,7 @@ class rt:
             cb = rt._flow_expire
         if pid in self._timer:
             self._timer[pid].cancel()
-        print("starting timeout timer for %s, callback is %s" % (pid, cb))
+       #print("starting timeout timer for %s, callback is %s" % (pid, cb))
         self._timer[pid] = threading.Timer(delay, cb, [self, pid])
         self._timer[pid].start()
                 
@@ -113,18 +113,18 @@ class rt:
                 
                 # add segment to the corresponding buffer and call the callback if it is complete
                 if pkt['seg_no'] == 0 and pkt['seg_ct'] == 1:
-                    print("first and only packet")
+                    #print("first and only packet")
                     self._callback(pkt['slave'], pkt['pkg_type'], pkt['payload'])
                 elif pkt['seg_no'] == 0:
-                    print("first but not only packet")
+                    #print("first but not only packet")
                     self._data[pid] = [pkt]
                     self._ptimer(pid)
                 elif pid in self._data:
-                    print("not first packet")
+                    #print("not first packet")
                     self._timer[pid].cancel()
                     l = self._data[pid]
                     if l[len(l)-1]['seg_no'] == pkt['seg_no'] - 1:
-                        print("this is the packet we were waiting for")
+                        #print("this is the packet we were waiting for")
                         l.append(pkt)
                         if pkt['seg_no'] == pkt['seg_ct'] - 1:
                             print("we got the last segment")
@@ -132,7 +132,7 @@ class rt:
                             self._callback(pkt['slave'], pkt['pkg_type'], payload)
                             del self._data[pid]
                     else:
-                        print("the packet we received wasn't one we were waiting for")
+                        #print("the packet we received wasn't one we were waiting for")
                         self._ptimer(pid)
                 else:
                     print("[rt] unexpected segment %04x/%d.%d" % (pkt['slave'], pkt['pkg_no'], pkt['seg_no']))
@@ -148,8 +148,8 @@ class rt:
         
     def poll(self, addr):
         self._waiting[addr] = addr
-        self._ptimer(addr, delay=5.0, cb=rt._poll_retx)
-        print("Sending poll to %04x" % addr)
+        self._ptimer(addr, delay=2.0, cb=rt._poll_retx)
+        #print("Sending poll to %04x" % addr)
         self.send(addr, rt.ptype['POLL'], "")
     
     def _end(self):    

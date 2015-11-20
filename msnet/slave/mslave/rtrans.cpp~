@@ -38,8 +38,6 @@ void rt_state::rt_fsm_event(uint8_t type, const void *data){
                         // remove the segment from the transmit queue
                         rb_get(&this->tx_queue, (uint8_t *) &pkt, sizeof(rt_out_header));
                         rb_del(&this->tx_queue, pkt.len + 1);
-                        /*Serial.println("\n ACK Remove from transmit queue");//TODO
-                        Serial.flush();*/
                         
                         break;
                 }
@@ -53,38 +51,18 @@ void rt_state::rt_fsm_event(uint8_t type, const void *data){
                           rb_del(&this->tx_queue, pkt.len + 1);
                           rb_peek(&this->tx_queue, (uint8_t *) &pkt, sizeof(rt_out_header));
                         } while(pkt.pkg_no == this->tx_wait_pkg);
-                       /* Serial.println("\n NAK Remove from transmit queue");//TODO
-                        Serial.flush();*/
                         break;
                 }
         }
 }
 
-/** Add an event to the callback queue */
-void rt_state::rt_queue_incoming(const rt_out_header *pkt){
-        // Build abbreviated header
-        rt_in_header  hdr_tmp = {
-                .master = pkt->master,
-                .slave  = pkt->slave,
-                .type   = pkt->type,
-                .len    = pkt->len
-        };
-
-        // Copy header to ringbuffer
-        if(rb_put(&this->rx_queue, (const uint8_t *) &hdr_tmp, sizeof(rt_in_header)) != sizeof(rt_in_header)){
-                // TODO: handle error (rx queue full)
-        }
-        
-        // Copy payload to ringbuffer
-        if(rb_put(&this->rx_queue, ((const uint8_t *) &hdr_tmp) + sizeof(rt_out_header), pkt->len) != pkt->len){
-                // TODO: handle error (rx queue full)
-        }
-}
-
 /** Process incoming packet */
 void rt_state::rt_handle_incoming(const unsigned char *data){
-       
+       Serial.println( "Incomming..." );
+        static rt_in_header abrev_pkt;
         const rt_out_header *pkt = (const rt_out_header *) data;
+        
+        
         uint8_t i, acc = 0;
         
         // verify checksum
@@ -93,17 +71,26 @@ void rt_state::rt_handle_incoming(const unsigned char *data){
         }
         
         if(acc != 0xff){
-                // TODO: report error (bad checksum)
+                Serial.println( "Bad checksum" );
                 return;
         }
         
         // handle packet
         switch(pkt->type){
+                //case RTRANS_TYPE_SET:
                 case RTRANS_TYPE_PROBE:
                 case RTRANS_TYPE_POLL:
-                case RTRANS_TYPE_SET:
-                        /* Just queue the packet to be passed to the callback */
-                        rt_queue_incoming(pkt);
+                        //Packet comes in with tr_out_header,
+                          //callback expects tr_in_header, so copy necessary data
+                       abrev_pkt = {
+                                .master = pkt->master,
+                                .slave  = pkt->slave,
+                                .type   = pkt->type,
+                                .len    = pkt->len
+                        };
+                        //Run the callback
+                        Serial.println( "Callback");
+                        rx_callback( &abrev_pkt );
                         break;
                         
                 case RTRANS_TYPE_ACK:
@@ -114,7 +101,6 @@ void rt_state::rt_handle_incoming(const unsigned char *data){
         }
 }
 
-//---workon--
 /** Transmit the segment at the front of the tx queue */
 void rt_state::rt_tx_queued(){
         uint8_t pkt[RTRANS_PACKET_SIZE];
@@ -173,33 +159,6 @@ uint8_t rt_state::rt_read_incoming(unsigned char *at_buffer, size_t at_len){
 
 }
 
-/** If there is a packet waiting in the rx queue,
-    pop it off and run the callback
-*/
-void rt_state::rt_rx_pop(){
-        rt_in_header pkt;
-        uint8_t cb_buffer[RTRANS_PAYLOAD_SIZE];
-
-        /* we need at least one header in the ringbuffer */
-        if(this->rx_queue.avail >= sizeof(rt_in_header)){
-                /* get the header */
-                rb_get(&this->rx_queue, (uint8_t *) &pkt, sizeof(rt_in_header));
-                
-                /* check that the payload is available */
-                if(this->rx_queue.avail >= pkt.len){
-                        /* copy the payload */
-                        rb_get(&this->rx_queue, cb_buffer, pkt.len);
-                        
-                        /* run the callback*/
-                        this->rx_callback(&pkt, cb_buffer);
-
-                }
-                else{
-                        // TODO: handle error (ringbuffer underflow)
-                }
-        }
-}
-
 /** Initializes the XBee and the rtrans driver
     Params:
       rt_serial: the SoftwareSerial object to use to communicate with the XBee
@@ -212,7 +171,6 @@ rt_state::rt_state(SoftwareSerial &xs, rt_callback cb_func){
         this->rx_callback = cb_func;
         this->master = RTRANS_NO_MASTER;
         rb_init(&this->tx_queue, rtrans_tx_buffer, RTRANS_PACKET_BUFFER);
-        rb_init(&this->rx_queue, rtrans_rx_buffer, RTRANS_PACKET_BUFFER);
 }
 
 void rt_state::rt_init(){
@@ -227,7 +185,7 @@ void rt_state::rt_init(){
         /* Wait for the AT response */
         while(rt_read_incoming(at_response, 8) != 2);
 
-        //TODO: Uncomment; I commented out address change code
+
         /* Assign the 16-bit address */
         this->slave = at_response[3] | (at_response[2] << 8);
         AtCommandRequest at_cmd_my_req = AtCommandRequest(at_cmd_my, &at_response[2], 2);
@@ -264,7 +222,6 @@ void rt_state::rt_loop(void){
                 this->retx_ct = 0;
                 rt_tx_queued();
         }
-        rt_rx_pop();
         
 }
 

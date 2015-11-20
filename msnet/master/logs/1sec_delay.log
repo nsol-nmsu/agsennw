@@ -1,0 +1,949 @@
+16
+Sending probe (0)...
+Sending probe (1)...
+Sending probe (2)...
+Sending probe (3)...
+Sending probe (4)...
+Sending probe (5)...
+Sending probe (6)...
+Sending probe (7)...
+Sending probe (8)...
+Sending probe (9)...
+Join from 64f9.
+Join from 8e83.
+Join from 9074.
+Join from 64e7.
+Got data segment 8e83/1.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/1.0
+got a packet from 64f9, length 6
+0 : address: 64f9 , id: 66 , data: -55.468750
+
+
+
+Got data segment 9074/1.0
+got a packet from 9074, length 6
+1 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/1.0
+got a packet from 64e7, length 6
+2 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/2.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/2.0
+got a packet from 64f9, length 6
+3 : address: 64f9 , id: 66 , data: -48.632812
+
+
+
+Got data segment 9074/2.0
+got a packet from 9074, length 6
+4 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/2.0
+got a packet from 64e7, length 6
+5 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/3.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/3.0
+got a packet from 64f9, length 6
+6 : address: 64f9 , id: 66 , data: -46.679688
+
+
+
+Got data segment 9074/3.0
+got a packet from 9074, length 6
+7 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/3.0
+got a packet from 64e7, length 6
+8 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/4.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/4.0
+got a packet from 64f9, length 6
+9 : address: 64f9 , id: 66 , data: -35.937500
+
+
+
+Got data segment 9074/4.0
+got a packet from 9074, length 6
+10 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/4.0
+got a packet from 64e7, length 6
+11 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/5.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/5.0
+got a packet from 64f9, length 6
+12 : address: 64f9 , id: 66 , data: -48.144531
+
+
+
+Got data segment 9074/5.0
+got a packet from 9074, length 6
+13 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/5.0
+got a packet from 64e7, length 6
+14 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/6.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/6.0
+got a packet from 64f9, length 6
+15 : address: 64f9 , id: 66 , data: -43.750000
+
+
+
+Got data segment 9074/6.0
+got a packet from 9074, length 6
+16 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/6.0
+got a packet from 64e7, length 6
+17 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/7.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/7.0
+got a packet from 64f9, length 6
+18 : address: 64f9 , id: 66 , data: -49.609375
+
+
+
+Got data segment 9074/7.0
+got a packet from 9074, length 6
+19 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/7.0
+got a packet from 64e7, length 6
+20 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/8.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/8.0
+got a packet from 9074, length 6
+21 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/8.0
+got a packet from 64e7, length 6
+22 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/9.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/9.0
+got a packet from 64f9, length 6
+23 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 64f9/10.0
+got a packet from 64f9, length 6
+24 : address: 64f9 , id: 66 , data: -55.468750
+
+
+
+Got data segment 64f9/11.0
+got a packet from 64f9, length 6
+25 : address: 64f9 , id: 66 , data: -47.167969
+
+
+
+Got data segment 9074/9.0
+got a packet from 9074, length 6
+26 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/9.0
+got a packet from 64e7, length 6
+27 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/10.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/12.0
+got a packet from 64f9, length 6
+28 : address: 64f9 , id: 66 , data: -45.214844
+
+
+
+Got data segment 9074/10.0
+got a packet from 9074, length 6
+29 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/10.0
+got a packet from 64e7, length 6
+30 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/11.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/13.0
+got a packet from 64f9, length 6
+31 : address: 64f9 , id: 66 , data: -44.238281
+
+
+
+Got data segment 9074/11.0
+got a packet from 9074, length 6
+32 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 8e83/12.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/14.0
+got a packet from 64f9, length 6
+33 : address: 64f9 , id: 66 , data: -58.886719
+
+
+
+Got data segment 64e7/11.0
+got a packet from 64e7, length 6
+34 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 9074/12.0
+got a packet from 9074, length 6
+35 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/12.0
+got a packet from 64e7, length 6
+36 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/13.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/15.0
+got a packet from 64f9, length 6
+37 : address: 64f9 , id: 66 , data: -35.449219
+
+
+
+Got data segment 9074/13.0
+got a packet from 9074, length 6
+38 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/13.0
+got a packet from 64e7, length 6
+39 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/14.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/16.0
+got a packet from 64f9, length 6
+40 : address: 64f9 , id: 66 , data: -53.027344
+
+
+
+Got data segment 9074/14.0
+got a packet from 9074, length 6
+41 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/14.0
+got a packet from 64e7, length 6
+42 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/15.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/15.0
+got a packet from 9074, length 6
+43 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/15.0
+got a packet from 64e7, length 6
+44 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/16.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/16.0
+got a packet from 9074, length 6
+45 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/16.0
+got a packet from 64e7, length 6
+46 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/18.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/20.0
+got a packet from 64f9, length 6
+47 : address: 64f9 , id: 66 , data: -54.980469
+
+
+
+Got data segment 64f9/21.0
+got a packet from 64f9, length 6
+48 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 8e83/20.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/21.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/22.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/23.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/24.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/25.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/26.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/27.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 8e83/28.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/18.0
+got a packet from 9074, length 6
+49 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64f9/21.0
+got a packet from 64f9, length 6
+50 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 64e7/18.0
+got a packet from 64e7, length 6
+51 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 64f9/21.0
+got a packet from 64f9, length 6
+52 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 8e83/29.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/22.0
+got a packet from 64f9, length 6
+53 : address: 64f9 , id: 66 , data: -44.238281
+
+
+
+Got data segment 64f9/22.0
+got a packet from 64f9, length 6
+54 : address: 64f9 , id: 66 , data: -44.238281
+
+
+
+Got data segment 9074/20.0
+got a packet from 9074, length 6
+55 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 9074/21.0
+got a packet from 9074, length 6
+56 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 8e83/30.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/22.0
+got a packet from 9074, length 6
+57 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64f9/22.0
+got a packet from 64f9, length 6
+58 : address: 64f9 , id: 66 , data: -44.238281
+
+
+
+Got data segment 64e7/20.0
+got a packet from 64e7, length 6
+59 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 64e7/21.0
+got a packet from 64e7, length 6
+60 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 64e7/22.0
+got a packet from 64e7, length 6
+61 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 64f9/23.0
+got a packet from 64f9, length 6
+62 : address: 64f9 , id: 66 , data: -41.796875
+
+
+
+Got data segment 64f9/24.0
+got a packet from 64f9, length 6
+63 : address: 64f9 , id: 66 , data: -43.261719
+
+
+
+Got data segment 64f9/25.0
+got a packet from 64f9, length 6
+64 : address: 64f9 , id: 66 , data: -41.308594
+
+
+
+Got data segment 64f9/26.0
+got a packet from 64f9, length 6
+65 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 64f9/27.0
+got a packet from 64f9, length 6
+66 : address: 64f9 , id: 66 , data: -58.398438
+
+
+
+Got data segment 9074/23.0
+got a packet from 9074, length 6
+67 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/23.0
+got a packet from 64e7, length 6
+68 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/31.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/28.0
+got a packet from 64f9, length 6
+69 : address: 64f9 , id: 66 , data: -35.449219
+
+
+
+Got data segment 9074/24.0
+got a packet from 9074, length 6
+70 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/24.0
+got a packet from 64e7, length 6
+71 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/32.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/29.0
+got a packet from 64f9, length 6
+72 : address: 64f9 , id: 66 , data: -35.937500
+
+
+
+Got data segment 9074/25.0
+got a packet from 9074, length 6
+73 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/25.0
+got a packet from 64e7, length 6
+74 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/33.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/30.0
+got a packet from 64f9, length 6
+75 : address: 64f9 , id: 66 , data: -58.398438
+
+
+
+Got data segment 9074/26.0
+got a packet from 9074, length 6
+76 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/26.0
+got a packet from 64e7, length 6
+77 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/34.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/31.0
+got a packet from 64f9, length 6
+78 : address: 64f9 , id: 66 , data: -53.515625
+
+
+
+Got data segment 9074/27.0
+got a packet from 9074, length 6
+79 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/27.0
+got a packet from 64e7, length 6
+80 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/35.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/32.0
+got a packet from 64f9, length 6
+81 : address: 64f9 , id: 66 , data: -38.867188
+
+
+
+Got data segment 9074/28.0
+got a packet from 9074, length 6
+82 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/28.0
+got a packet from 64e7, length 6
+83 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/36.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/33.0
+got a packet from 64f9, length 6
+84 : address: 64f9 , id: 66 , data: -59.375000
+
+
+
+Got data segment 9074/29.0
+got a packet from 9074, length 6
+85 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/29.0
+got a packet from 64e7, length 6
+86 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/37.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/34.0
+got a packet from 64f9, length 6
+87 : address: 64f9 , id: 66 , data: -59.375000
+
+
+
+Got data segment 9074/30.0
+got a packet from 9074, length 6
+88 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/30.0
+got a packet from 64e7, length 6
+89 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/38.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/35.0
+got a packet from 64f9, length 6
+90 : address: 64f9 , id: 66 , data: -35.449219
+
+
+
+Got data segment 9074/31.0
+got a packet from 9074, length 6
+91 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/31.0
+got a packet from 64e7, length 6
+92 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/39.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/36.0
+got a packet from 64f9, length 6
+93 : address: 64f9 , id: 66 , data: -37.402344
+
+
+
+Got data segment 9074/32.0
+got a packet from 9074, length 6
+94 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/32.0
+got a packet from 64e7, length 6
+95 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/40.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/33.0
+got a packet from 9074, length 6
+96 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/33.0
+got a packet from 64e7, length 6
+97 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/41.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/38.0
+got a packet from 64f9, length 6
+98 : address: 64f9 , id: 66 , data: -43.261719
+
+
+
+Got data segment 64f9/39.0
+got a packet from 64f9, length 6
+99 : address: 64f9 , id: 66 , data: -45.703125
+
+
+
+Got data segment 64f9/40.0
+got a packet from 64f9, length 6
+100 : address: 64f9 , id: 66 , data: -65.234375
+
+
+
+Got data segment 9074/34.0
+got a packet from 9074, length 6
+101 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/34.0
+got a packet from 64e7, length 6
+102 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/42.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 9074/35.0
+got a packet from 9074, length 6
+103 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/35.0
+got a packet from 64e7, length 6
+104 : address: 64e7 , id: 66 , data: 110.058594
+
+
+
+Got data segment 8e83/43.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/42.0
+got a packet from 64f9, length 6
+105 : address: 64f9 , id: 66 , data: -40.820312
+
+
+
+Got data segment 64f9/43.0
+got a packet from 64f9, length 6
+106 : address: 64f9 , id: 66 , data: -47.167969
+
+
+
+Got data segment 64f9/44.0
+got a packet from 64f9, length 6
+107 : address: 64f9 , id: 66 , data: -43.261719
+
+
+
+Got data segment 9074/36.0
+got a packet from 9074, length 6
+108 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/36.0
+got a packet from 64e7, length 6
+109 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/44.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/45.0
+got a packet from 64f9, length 6
+110 : address: 64f9 , id: 66 , data: -59.863281
+
+
+
+Got data segment 9074/37.0
+got a packet from 9074, length 6
+111 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/37.0
+got a packet from 64e7, length 6
+112 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/45.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/46.0
+got a packet from 64f9, length 6
+113 : address: 64f9 , id: 66 , data: -39.843750
+
+
+
+Got data segment 9074/38.0
+got a packet from 9074, length 6
+114 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/38.0
+got a packet from 64e7, length 6
+115 : address: 64e7 , id: 66 , data: 109.570312
+
+
+
+Got data segment 8e83/46.0
+got a packet from 8e83, length 0
+
+
+
+Got data segment 64f9/47.0
+got a packet from 64f9, length 6
+116 : address: 64f9 , id: 66 , data: -35.937500
+
+
+
+Got data segment 9074/39.0
+got a packet from 9074, length 6
+117 : address: 9074 , id: 1 , data: 105.199997
+
+
+
+Got data segment 64e7/39.0
+got a packet from 64e7, length 6
+118 : address: 64e7 , id: 66 , data: 109.570312
+
+
+

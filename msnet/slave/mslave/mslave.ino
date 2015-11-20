@@ -8,7 +8,7 @@
 #include "spi_master.h"
 
 
-void callback(rt_in_header *header, uint8_t payload[]);
+void callback(rt_in_header *header);
 void update_slaves();
 void send_poll_response();
 SoftwareSerial xs(6,7);
@@ -43,7 +43,6 @@ void update_slaves()
     {
       sslaves[sslave_count] = sslave_pins[i];
       sslave_count++;
-      Serial.print("   ->Found slave on pin ");
       Serial.println((int)sslave_pins[i]);
     }
   }
@@ -65,22 +64,19 @@ void send_poll_response()
   {
     data[i].id = get_id(sslaves[i]);
     data[i].value = read_chan(sslaves[i], 0);
-    Serial.println(data[i].value);
   }
 
   rtrans_state.rt_send(RTRANS_TYPE_DATA, (unsigned char*)data, sizeof(data));
 }
 
-void callback(rt_in_header *header, uint8_t payload[])
+void callback(rt_in_header *header )
 {
   
   static boolean joined = false;
   if(header->type == RTRANS_TYPE_POLL){
-    Serial.print("poll from "); Serial.println(header->master);
    send_poll_response();
   }
   else if(header->type == RTRANS_TYPE_PROBE && !joined){
-   Serial.print("probe from "); Serial.println(header->master);
    rtrans_state.rt_join(header->master);
    joined = true;
   }
