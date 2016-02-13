@@ -52,8 +52,13 @@ static volatile uint8_t  sdi_pin;   //Pin
 //Debug
 int readcount = 0;
 int writecount = 0;
+int tracker = 0;
+int rbitscount = 0;
+uint8_t dbg[10] = {0};
+int dbgidx = 0;
 
 inline void sdi_set( Bool state );
+inline void sdi_set_direction( LineDirection dir );
 
 /*
 Initialize the module.
@@ -66,6 +71,7 @@ inline void sdi_init( volatile uint8_t* dport, volatile uint8_t* port, uint8_t p
         sdi_dport = dport;
         sdi_port  = port;
         sdi_pin   = pin;
+        sdi_set_direction( OUTPUT );
 
         //Set the data line to marking for 100 ms to clear all garbage and noise
         sdi_set( FALSE );
@@ -166,40 +172,65 @@ Read a char
 */
 inline uint8_t sdi_read()
 {
+        tracker = 0;
         uint8_t ch = 0;
-        
-        //Wait for the start bit
-        sdi_wait_mark();
+
+        //15ms is max allowed timing between request and response: wait for the start bit
+        unsigned long count = 15000;
+        while( !sdi_get() && count-- )
+                _delay_us( 1 );
+                
+        //If count == 0, response didn't come, return 0
+        if( !count )
+                return 0;
+
+        tracker++; //1
         
         //Wait for the start bit to end
         sdi_wait_bit();
+
+        tracker++;//2
         
         //Wait for 1/2 bit spacing to set sample in the middle of bit 0
         _delay_us( SPACING / 2 );
+
+        tracker++;//3
         
         //Read all data bits
         uint8_t mask = 1;
-        for( ; mask < 128 ; mask <<= 1 )
+        for( ; mask < 0x80 ; mask <<= 1 )
         {
                 if( !sdi_get() )
                         ch |= mask;
+                else
+                        ch &= ~mask;
                         
                 //Wait for the middle of the next bit
                 sdi_wait_bit();
+                rbitscount++;
         }
+
+        dbg[dbgidx++] = ch;
+
+        tracker++;//4
         
         //Should now be in the middle of the parity bit, returns 0 if it is bad
         Bool aparity = sdi_get();
         Bool cparity = parity_even_bit( ch );
+
+        tracker++;//5
         
         //Wait for stop bit to pass
         _delay_us( SPACING / 2 );
         sdi_wait_bit();
+
+        tracker++;//6
         
         //If correct parity and acctual parity are different then return 0
         if( !cparity != !aparity )
                 return 0;
-        
+
+        tracker++;//7
         //Otherwise return ch
         return ch;
 }
@@ -259,26 +290,17 @@ inline Bool sdi_exchange( uint8_t* command, uint8_t* response )
         
         
         sdi_set_direction( INPUT );
-        unsigned long count = 15;
-        while( count-- )
-        {
-                //If we get the response's start bit then exit the loop
-                if( !sdi_get() )
-                        break;
-                _delay_ms( 1 );
-                
-        }
-        
-        //If count == 0, forget about the response, return false
-        if( !count )
-                return FALSE;
         
         //Read all input until <CR><LF>
         int idx = 0;
         while( !( idx > 1 && response[ idx - 2 ] == '\r' && response[ idx - 1 ] == '\n' )
                 && idx <= MAX_READ )
         {
-                response[ idx++ ] = sdi_read();
+                response[ idx ] = sdi_read();
+                if( response[ idx ] == 0 )
+                  return FALSE;
+
+                idx++;
                 readcount++;
         }
         
