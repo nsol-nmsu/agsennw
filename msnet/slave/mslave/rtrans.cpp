@@ -285,4 +285,5 @@ size_t rt_state::rt_send(uint8_t type, const uint8_t *payload, size_t length){
 void rt_state::rt_join(uint16_t addr){
         this->master = addr;
         rt_send(RTRANS_TYPE_JOIN, 0, 0);
+        Serial.println("join sent");
 }

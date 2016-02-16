@@ -6,27 +6,8 @@
 #include "analog.h"
 #include "slave.h"
 
-/*
-The 'sslave' refered to throughout this file is not declared in this file.
-The 'sslave' is a Slave struct from slave.h, and is expected to be defined in an include file.
-This allows us to easily switch out slave definitions without changing the main program code.
-
-This file also expects 'void sslave_init()' to be defined elsewhere.  This can be used to initialize
-'sslave,' but if initialization is unnecessary it can be an empty function.
-*/
-
-//This is a sample sslave include file
-#if defined _SLAVE_TTEMP_
-#include "ttemp_slave.c"
-#elif defined _SLAVE_DUMMY1_
-#include "dummy_slave1.c"
-#elif defined _SLAVE_DUMMY2_
-#include "dummy_slave2.c"
-#elif defined _SLAVE_DUMMY3_
-#include "dummy_slave3.c"
-#else
-#include "dummy_slave4.c"
-#endif
+//Must have valid slave definition
+#include "slave_defs.h"
 
 inline int to_int(char bs[2]);
 inline char* from_int(int i);
@@ -38,18 +19,30 @@ inline void prep_ok();
 void prep_response(char r);
 void do_action(char r);
 
+//DEBUG
+void set_status( int state )
+{
+    if( state )
+        PORTB |= _BV( 1 );
+    else
+        PORTB &= ~_BV( 1 );
+}
+
 int main(void)
 {
+
+    //DEBUG
+    DDRB |= _BV(1);
 
   usi_enable();
   spiX_initslave(SPIMODE);
   sei();
   
   //Initialize sslave
-  sslave_init();
+  slave_init();
   
   //Let settings catch up
-  _delay_ms(100);
+  _delay_ms(50); //Don't raise this higher than 50, nasty bug when reaches 100
   
   //An initial packet, not sure what it's for, but the other code had it
   prepare_packet("init", 8);
@@ -61,8 +54,14 @@ int main(void)
   unsigned char input;
   do{
   
+  //DEBUG
+    //set_status( 0 );
+    
     //Wait for SS
     while(!slave_selected());
+    
+    //DEBUG
+         //set_status( 1 );
     
     //Wait for pending transfers
     spiX_wait();
@@ -70,10 +69,15 @@ int main(void)
     //Read first character from master
     input = spiX_get();
     
+    //DEBUG
+         //set_status( 1 );
+    
     //Is the master telling us to receive?
       //If so, interpret the input and prepare a response packet
     if(input == RECEIVE_CHAR)
     {
+    //DEBUG
+         //set_status( 1 );
       //Retrieve the rest of the packet from master
       receive_packet();
       
@@ -87,6 +91,8 @@ int main(void)
       //Lowercase are read operations
       if(incoming_packet[1] > 96 && incoming_packet[1] < 127)
       {
+      //DEBUG
+         //set_status( 1 );
         prep_response(incoming_packet[1]);
       }
       else
@@ -129,7 +135,6 @@ inline char* from_int(int i)
 
 inline float to_float(char bs[4])
 {
-  float f;
   num_convert.bs[0] = bs[0];
   num_convert.bs[1] = bs[1];
   num_convert.bs[2] = bs[2];
@@ -163,6 +168,8 @@ void prep_response(char r)
   char date[3];
   char arg = incoming_packet[2];
   
+  //DEBUG
+      //set_status( 1 );
   switch(r)
   {
     //Prepare id to be sent
@@ -197,41 +204,36 @@ void prep_response(char r)
     case 'w':
       prepare_packet(from_int(sslave.wcount),sizeof(int)); 
       break;
+  //Start measurment on channel
+    case  'm':
+      if(arg < sslave.rcount )
+      {
+        //DEBUG
+        set_status( 1 );
+      
+        //Wait for measurment
+      	unsigned wait = slave_measure( arg );
+        prepare_packet( from_int(wait), sizeof( unsigned ) );
+      }
+      else
+        prep_err();
+      break;
       
     //Channel value/output
     case  'q':
-      if(arg < sslave.rcount && sslave.rchans[arg] != NULL)
-        prepare_packet(from_float(sslave.rchans[arg]()), sizeof(float));
-      else
-        prep_err();
-      //prepare_packet(from_float(getVoltage(ADC_3, 5.0)), sizeof(float));
-      break;
-      
-    //Raw voltage at ADC_X
-    case 'v':
-      if(arg < sslave.rcount && sslave.rchans[arg] != NULL)
+    //DEBUG
+      //set_status( 1 );
+      if(arg < sslave.rcount )
       {
-        if(arg >= 8)
-          prepare_packet(from_float(getVoltage(ADC_TEMP, sslave.vref)), sizeof(float));
-        else
-          prepare_packet(from_float(getVoltage(arg, sslave.vref)), sizeof(float));
+      	char* valstr = slave_read( arg );
+        prepare_packet( valstr, strlen( valstr ) );
       }
-      else
-      {
-        prep_err();
-      }
-      break;
-      
-    //Unit at X
-    case 'u':
-      if(arg < sslave.rcount)
-        prepare_packet(from_int(sslave.units[arg]), sizeof(int));
       else
         prep_err();
       break;
       
     case 'f':
-      prepare_packet(sslave.info, MAX_INFO_LEN);
+      prepare_packet(sslave.info, sslave.ilen);
       break;
     //Echo      
      case 'e':
@@ -265,12 +267,6 @@ void do_action(char r)
       prep_ok();
       break;
     
-    //Change units
-    case 'U':
-      sslave.units[arg] = to_int(&incoming_packet[3]);
-      prep_ok();
-      break;
-    
     //Change info
     case 'F':
       memcpy(sslave.info, &incoming_packet[2], MAX_INFO_LEN);
@@ -279,9 +275,9 @@ void do_action(char r)
       
     //Write to write channel X
     case 'W':
-      if(arg < sslave.wcount && sslave.wchans[arg] != NULL)
+      if(arg < sslave.wcount )
       {
-        sslave.wchans[arg](to_float(&incoming_packet[3]));
+        slave_write( &incoming_packet[3], arg );
         prep_ok();
       }
       else

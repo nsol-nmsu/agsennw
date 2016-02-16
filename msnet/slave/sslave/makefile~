@@ -1,17 +1,12 @@
-main: 
-	
-mktemp: main.c analog.c analog.h slave.h spi_slave.c spi_slave.h ttemp_slave.c
-	avr-gcc -Os -D_SLAVE_TTEMP_ -mmcu=attiny84 \
-	-DF_CPU=8000000 -o main main.c analog.c spi_slave.c
+PROGRAMMER=usbtiny
 
-mkdummy: main.c analog.c analog.h slave.h spi_slave.c spi_slave.h dummy_slave.c
-	avr-gcc -Os -D_SLAVE_DUMMY_ -mmcu=attiny84 \
-	-DF_CPU=8000000 -o main main.c analog.c spi_slave.c
-	
-temp: mktemp
-	avr-objcopy -O ihex -R .eeprom main main.bin
-	avrdude -p t84 -c usbtiny -U flash:w:main.bin
-	
-dummy: mkdummy
-	avr-objcopy -O ihex -R .eeprom main main.bin
-	avrdude -p t84 -c usbtiny -U flash:w:main.bin
+deploy: main.hex
+	avrdude -p t84 -c $(PROGRAMMER) -U flash:w:main.hex #-P /dev/ttyUSB1
+
+main.hex: main.elf
+	avr-objcopy -O ihex -R .eeprom main.elf main.hex
+
+
+main.elf: main.c analog.c analog.h slave.h spi_slave.c spi_slave.h slave_defs.h sdi.h
+	avr-gcc -Os -mmcu=attiny84 \
+	-DF_CPU=8000000 -o main.elf main.c analog.c spi_slave.c

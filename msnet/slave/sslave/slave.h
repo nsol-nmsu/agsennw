@@ -12,9 +12,6 @@ houses the data that should be kept in EEPROM.
 #define MAX_INFO_LEN 30
 #define MAX_CHANNELS 10
 
-//Pack these structures to save space
-#pragma push(1)
-
 typedef struct
 {
   int  id;                        //Id
@@ -23,34 +20,28 @@ typedef struct
   char m, d, y;                   //Deployment date, y is in years since 2000
   char rcount;                    //Number of read channels
   char wcount;                    //Number of write channels
-  
-  //Voltage reference to use for ADC voltage conversion
-  float vref;
-  
-  //Pointers to functions that will compute the value for each channel
-  float (*rchans[MAX_CHANNELS])();
-  
-  //Pointers to functions that will write to each channel
-    //if the channel is not writable then the channel can be NULL
-  void (*wchans[MAX_CHANNELS])(float f);
-                    
-  int   units[MAX_CHANNELS];      //Units for the values of each channel
-  char   info[MAX_INFO_LEN];      //Any additional info that associated with the
+  char ilen;                      //Length of info
+  char info[MAX_INFO_LEN];       //Any additional info that associated with the
                                   //node, maybe a description
 }Slave;
 
-typedef struct
-{
-  int   id;
-  int   type;
-  char  name[MAX_NAME_LEN];
-  char  m, d, y;
-  char  rcount;
-  char  wcount;
-  float vref;
-  int   units[MAX_CHANNELS];
-  int   info[MAX_INFO_LEN];
-}SlavePersist;
+/*
+The slave_xxx.h file included is also expected to define:
 
-#pragma pop
+//Initializes the slave if initialization is necessary, returns non-zero failure
+int slave_init();
+
+//Begins a measurment on channel ch, returns time in ms until measurment is ready
+unsigned slave_measure( unsigned ch );
+
+//Reads a measurment, returns measurment as string
+char* slave_read( unsigned ch );
+
+//Writes data to some channel, returns non-zero on failure
+int slave_write( const char* msg, unsigned ch );
+
+//If write opperations is buffered, this function applies the changes,
+// causing all writes to take effect.  Return non-zero on failure.
+int apply( unsigned ch );
+*/
 #endif //_SLAVE_H_

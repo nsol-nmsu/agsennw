@@ -21,18 +21,20 @@ char sslaves[sslave_pin_count] = {0};
 
 void setup(){
   Serial.begin(9600);
-  xs.begin(9600);
+  //xs.begin(9600);
   delay(100);
-  xbee_init(xs);
-  rtrans_state.rt_init();
+  //xbee_init(xs);
+  //rtrans_state.rt_init();
+  //Serial.println( "rt initialized");
   message_init(sslave_pins, sslave_pin_count);
   update_slaves();
+  Serial.println("ready");
 }
 
 void loop()
 {
-  rtrans_state.rt_loop(); 
-  //Serial.println(read_chan(9, 0));
+  //rtrans_state.rt_loop(); 
+  Serial.println(read_chan(3, 0));
 }
 
 void update_slaves()
@@ -71,12 +73,14 @@ void send_poll_response()
 
 void callback(rt_in_header *header )
 {
-  
+  Serial.println( "got packet");
   static boolean joined = false;
   if(header->type == RTRANS_TYPE_POLL){
    send_poll_response();
+   Serial.println("POLL");
   }
   else if(header->type == RTRANS_TYPE_PROBE && !joined){
+    Serial.println("PROBE");
    rtrans_state.rt_join(header->master);
    joined = true;
   }
