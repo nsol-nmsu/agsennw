@@ -9,6 +9,8 @@
 //Must have valid slave definition
 #include "slave_defs.h"
 
+int    waiting_measure = 0;  //Is master waiting for measurment?
+
 inline int to_int(char bs[2]);
 inline char* from_int(int i);
 inline float to_float(char bs[4]);
@@ -107,6 +109,12 @@ int main(void)
       send_packet();
     }
     
+    //If we need to start a measurement then do so, this will take some time
+        //so communication will stop until completed.
+    if( waiting_measure )
+    {
+        slave_measure_run();
+    }
   } while(1);      // Loop forever...
 }
 
@@ -213,6 +221,7 @@ void prep_response(char r)
       
         //Wait for measurment
       	unsigned wait = slave_measure( arg );
+      	waiting_measure = 1;
         prepare_packet( from_int(wait), sizeof( unsigned ) );
       }
       else
@@ -257,7 +266,7 @@ void do_action(char r)
   {
     //Set the sslave's slave type
     case 'T':
-      sslave.type = to_int(&incoming_packet[2]);
+      sslave.type = to_int( (char*) &incoming_packet[2]);
       prep_ok();
       break;
       
@@ -277,7 +286,7 @@ void do_action(char r)
     case 'W':
       if(arg < sslave.wcount )
       {
-        slave_write( &incoming_packet[3], arg );
+        slave_write( (char*)&incoming_packet[3], arg );
         prep_ok();
       }
       else

@@ -31,8 +31,13 @@ The slave_xxx.h file included is also expected to define:
 //Initializes the slave if initialization is necessary, returns non-zero failure
 int slave_init();
 
-//Begins a measurment on channel ch, returns time in ms until measurment is ready
+//Prepares to take a measurement, or in some slaves might send the measurment requst to another chip.
+//Returns time until measurement is ready, communication will be halted until then.
 unsigned slave_measure( unsigned ch );
+
+//Called after slave_measure() in case measurement needs to be run on the slave itself
+//runs the measurement code if slave_measure() hasn't requested a measurement. Returns 0 on success.
+int slave_run_measure();
 
 //Reads a measurment, returns measurment as string
 char* slave_read( unsigned ch );

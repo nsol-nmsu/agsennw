@@ -27,6 +27,11 @@ unsigned slave_measure( unsigned ch )
         return 0;
 };
 
+int slave_run_measure()
+{
+        return 0;
+};
+
 char* slave_read( unsigned ch )
 {
   double val = analogGet(ADC_TEMP) - 270;
@@ -74,6 +79,11 @@ unsigned slave_measure( unsigned ch )
         return 0;
 };
 
+int slave_run_measure()
+{
+        return 0;
+};
+
 char* slave_read( unsigned ch )
 {
   double val = 50.0 + (getVoltage(ADC_3, 5.0) - 2.5) * 100.0;
@@ -106,7 +116,7 @@ Slave sslave =
 
 #elif defined HYDRA_PROBE
 /**
-An SDI12 sensor for sensing soil moisture and temperature
+An SDI12 HydraProbe II sensor for sensing soil moisture and temperature
 **/
 #include "sdi.h"
 
@@ -128,11 +138,22 @@ unsigned slave_measure( unsigned ch )
         return wait * 1000;
 };
 
+int slave_run_measure()
+{
+        //HydraProbe takes 2 seconds for measurement
+        int count = 20;
+        while( count-- > 0 )
+        {
+                _delay_ms( 100 );
+        }
+        sdi_exchange("1D0!", response_buffer );
+        return 0;
+};
+
 char* slave_read( unsigned ch )
 {
   static char value[ MAX_PACKET_LENGTH ];
   
-  sdi_exchange("1D0!", response_buffer );
   int section = 0;
   int start = 0;
   while( section <= ch )
@@ -186,6 +207,11 @@ unsigned slave_measure( unsigned ch )
 {
         return 0;
 };
+
+int slave_measure_run( )
+{
+        return 0;
+}
 
 char* slave_read( unsigned ch )
 {
