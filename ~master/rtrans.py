@@ -16,13 +16,14 @@ class rt:
               'POLL':  2,
               'DATA':  3,
               'SET':   4,
-              'ERR':   5
+              'ERR':   5,
+              'PREPARE': 6
             }
 
     def __init__(self, tty, baud, addr, callback, loss=0.0, probe_time=5):
         self.tty  = Serial(tty, baudrate=baud)
         self.xbee = XBee(self.tty, callback=self._recv_frame)
-        self.addr = struct.unpack("<H", addr)[0]
+        self.addr = struct.unpack(">H", addr)[0]
         print self.addr
         self._frame = 0
         self._data = {}
@@ -31,6 +32,7 @@ class rt:
         self._callback = callback
         self._loss = loss
         self._probe_time = probe_time
+        self.xbee.send( "at", command="MY", parameter=addr )
     
     def _send(self, dest, pkg_type, pkg_no, seg_ct, seg_no, payload):
         rp = { 'master':   self.addr,
@@ -146,6 +148,9 @@ class rt:
             time.sleep(2)
         for i, v in self._slaves.items():
             self._callback(i, rt.ptype['JOIN'], "")
+            
+    def prepare(self):
+        self.send(0xffff, rt.ptype['PREPARE'], "")
         
     def poll(self, addr):
         self._waiting[addr] = addr

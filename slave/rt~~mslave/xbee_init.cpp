@@ -37,7 +37,7 @@ bool xbee_init(SoftwareSerial &xs){
                 "ATFR\r",
                 "+++",
                 "ATCH0C\r",
-                "ATID127\r",
+                "ATID1437\r",
                 "ATAP2\r",
                 "ATAC\r",
                 "ATCN\r"

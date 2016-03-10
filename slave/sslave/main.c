@@ -3,13 +3,9 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include <string.h>
-#include "analog.h"
 #include "slave.h"
 
-//Must have valid slave definition
-#include "slave_defs.h"
-
-int    waiting_measure = 0;  //Is master waiting for measurment?
+char waiting_measure = 0;
 
 inline int to_int(char bs[2]);
 inline char* from_int(int i);
@@ -21,49 +17,31 @@ inline void prep_ok();
 void prep_response(char r);
 void do_action(char r);
 
-//DEBUG
-void set_status( int state )
-{
-    if( state )
-        PORTB |= _BV( 1 );
-    else
-        PORTB &= ~_BV( 1 );
-}
+char buffer[MAX_PACKET_LENGTH];
 
 int main(void)
 {
-
-    //DEBUG
-    DDRB |= _BV(1);
-
+    
   usi_enable();
   spiX_initslave(SPIMODE);
   sei();
   
-  //Initialize sslave
+
+  //Initialize slave
   slave_init();
   
   //Let settings catch up
-  _delay_ms(50); //Don't raise this higher than 50, nasty bug when reaches 100
+  _delay_ms(100);
   
   //An initial packet, not sure what it's for, but the other code had it
   prepare_packet("init", 8);
   spiX_put(0);
   
-  //Temp
-  //analogEnableCustom(PS_64, ADCREF_VCC);
-  
   unsigned char input;
   do{
-  
-  //DEBUG
-    //set_status( 0 );
     
     //Wait for SS
     while(!slave_selected());
-    
-    //DEBUG
-         //set_status( 1 );
     
     //Wait for pending transfers
     spiX_wait();
@@ -71,15 +49,10 @@ int main(void)
     //Read first character from master
     input = spiX_get();
     
-    //DEBUG
-         //set_status( 1 );
-    
     //Is the master telling us to receive?
       //If so, interpret the input and prepare a response packet
     if(input == RECEIVE_CHAR)
     {
-    //DEBUG
-         //set_status( 1 );
       //Retrieve the rest of the packet from master
       receive_packet();
       
@@ -93,8 +66,6 @@ int main(void)
       //Lowercase are read operations
       if(incoming_packet[1] > 96 && incoming_packet[1] < 127)
       {
-      //DEBUG
-         //set_status( 1 );
         prep_response(incoming_packet[1]);
       }
       else
@@ -108,13 +79,8 @@ int main(void)
       //Send the prepared packet
       send_packet();
     }
+        
     
-    //If we need to start a measurement then do so, this will take some time
-        //so communication will stop until completed.
-    if( waiting_measure )
-    {
-        slave_measure_run();
-    }
   } while(1);      // Loop forever...
 }
 
@@ -173,66 +139,51 @@ inline void prep_ok()
 
 void prep_response(char r)
 {
-  char date[3];
   char arg = incoming_packet[2];
   
-  //DEBUG
-      //set_status( 1 );
   switch(r)
   {
     //Prepare id to be sent
     case 'i':
-      prepare_packet(from_int(sslave.id), sizeof(int));
+      prepare_packet(from_int(slave_id), sizeof(int));
       break;
       
     //Type
     case 't':
-      prepare_packet(from_int(sslave.type), sizeof(int));
+      prepare_packet( slave_type, strlen( slave_type ) );
       break;
       
     //Name
     case 'n':
-      prepare_packet(sslave.name, MAX_NAME_LEN);
+      prepare_packet(slave_name, strlen( slave_name ) );
       break;
       
     //Deployment Date
     case 'd':
-      date[0] = sslave.m;
-      date[1] = sslave.d;
-      date[2] = sslave.y;
-      prepare_packet(date, sizeof(date));
+      prepare_packet(slave_init_date, sizeof(slave_init_date));
       break;
       
     //Number of read channels
     case 'r':
-      prepare_packet(from_int(sslave.rcount),sizeof(int)); 
+      prepare_packet(from_int(slave_rcount),sizeof(int)); 
       break;
       
     //Number of write channels
     case 'w':
-      prepare_packet(from_int(sslave.wcount),sizeof(int)); 
+      prepare_packet(from_int(slave_wcount),sizeof(int)); 
       break;
   //Start measurment on channel
     case  'm':
-      if(arg < sslave.rcount )
-      {
-        //DEBUG
-        set_status( 1 );
-      
-        //Wait for measurment
-      	unsigned wait = slave_measure( arg );
-      	waiting_measure = 1;
-        prepare_packet( from_int(wait), sizeof( unsigned ) );
-      }
-      else
-        prep_err();
+    {
+      //Wait for measurment
+      unsigned wait = slave_measure();
+      prepare_packet( from_int(wait), sizeof( unsigned ) );
+    }
       break;
       
     //Channel value/output
     case  'q':
-    //DEBUG
-      //set_status( 1 );
-      if(arg < sslave.rcount )
+      if(arg < slave_rcount )
       {
       	char* valstr = slave_read( arg );
         prepare_packet( valstr, strlen( valstr ) );
@@ -242,7 +193,7 @@ void prep_response(char r)
       break;
       
     case 'f':
-      prepare_packet(sslave.info, sslave.ilen);
+      prepare_packet(slave_info, strlen( slave_info ) );
       break;
     //Echo      
      case 'e':
@@ -264,27 +215,27 @@ void do_action(char r)
   
   switch(r)
   {
-    //Set the sslave's slave type
+    //Set the slave type
     case 'T':
-      sslave.type = to_int( (char*) &incoming_packet[2]);
+      memcpy(slave_type, &incoming_packet[3], arg);
       prep_ok();
       break;
       
     //Set the sslave's name
     case 'N':
-      memcpy(sslave.name, &incoming_packet[2], MAX_NAME_LEN);
+      memcpy(slave_name, &incoming_packet[3], arg);
       prep_ok();
       break;
     
     //Change info
     case 'F':
-      memcpy(sslave.info, &incoming_packet[2], MAX_INFO_LEN);
+      memcpy(slave_info, &incoming_packet[3], arg);
       prep_ok();
       break;
       
     //Write to write channel X
     case 'W':
-      if(arg < sslave.wcount )
+      if(arg < slave_wcount )
       {
         slave_write( (char*)&incoming_packet[3], arg );
         prep_ok();

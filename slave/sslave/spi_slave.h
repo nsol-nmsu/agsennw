@@ -23,7 +23,7 @@ can be found at http://www.nongnu.org/avr-libc/user-manual/io_8h_source.html
 #  define TEMP_PIN             PB3
 //#  define MUX_INPUT             3   //ADMUX setting lower 4 bits : 0011 corresponds to PB3 (ADC3)
 
-#elif defined (__AVR_ATtiny84__)
+#elif defined (__AVR_ATtiny84__) || defined (__AVR_ATtiny84A__)
 #  define USI_OUT_REG          PORTA
 #  define USI_IN_REG           PINA
 #  define USI_DIR_REG          DDRA
@@ -40,7 +40,7 @@ can be found at http://www.nongnu.org/avr-libc/user-manual/io_8h_source.html
 
 #endif
 
-#define MAX_PACKET_LENGTH 30
+#define MAX_PACKET_LENGTH 60
 
 
 /*  Speed configuration:
@@ -48,7 +48,7 @@ can be found at http://www.nongnu.org/avr-libc/user-manual/io_8h_source.html
  *  Maximum = CPUSPEED / 64.
  */
 #define TC0_PRESCALER_VALUE 1  //!< Must be 1, 8, 64, 256 or 1024.
-#define TC0_COMPARE_VALUE   31  //!< Must be 0 to 255. Minimum 31 with prescaler CLK/1.
+#define TC0_COMPARE_VALUE   288//31  //!< Must be 0 to 255. Minimum 31 with prescaler CLK/1.
 
 
 

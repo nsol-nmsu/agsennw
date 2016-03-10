@@ -191,6 +191,11 @@ int exchange(int slave, char* command, int command_length, int num_retries, int 
     return 0;
   }
   
+  //wait if we request an EEPROM write
+  if(outgoing_packet[1] == 'q'){
+    delay(1000);
+  }
+  
   //receive command
   if(!receive_packet(timeout)){
     digitalWrite(slave, HIGH);

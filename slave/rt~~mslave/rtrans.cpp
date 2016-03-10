@@ -11,7 +11,7 @@
 unsigned long rt_state::rt_time(){
         static unsigned long last_time = 0;
         static unsigned long offset = 0;
-        unsigned long cur_time = millis() / 100;
+        unsigned long cur_time = millis()/100;
         if(cur_time < last_time){
                 offset += ((unsigned long) -1) / 100;
         }
@@ -70,7 +70,7 @@ void rt_state::rt_handle_incoming(const unsigned char *data){
         }
         
         if(acc != 0xff){
-                Serial.println( "Bad checksum" );
+                Serial.print( "Bad checksum got " );Serial.println( acc );
                 return;
         }
         
@@ -79,6 +79,7 @@ void rt_state::rt_handle_incoming(const unsigned char *data){
                 //case RTRANS_TYPE_SET:
                 case RTRANS_TYPE_PROBE:
                 case RTRANS_TYPE_POLL:
+                case RTRANS_TYPE_PREPARE:
                         //Packet comes in with tr_out_header,
                           //callback expects tr_in_header, so copy necessary data
                        abrev_pkt = {
@@ -123,6 +124,7 @@ void rt_state::rt_tx_queued(){
 void rt_state::rt_send_now(const rt_out_header *pkt){
         Tx16Request tx = Tx16Request(pkt->master, (uint8_t *) pkt, sizeof(rt_out_header) + pkt->len + 1);
         this->xbee.send(tx);
+        Serial.print( "rt sent to " ); Serial.println( pkt->master, HEX );
 }
 
 /** Read from the XBee serial interface
@@ -165,6 +167,7 @@ uint8_t rt_state::rt_read_incoming(unsigned char *at_buffer, size_t at_len){
       A pointer to the initialized rt_state object
 */
 rt_state::rt_state(SoftwareSerial &xs, rt_callback cb_func){
+        //time_init();
         this->xbee.setSerial(xs);
         this->rx_callback = cb_func;
         this->master = RTRANS_NO_MASTER;

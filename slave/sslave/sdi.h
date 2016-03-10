@@ -11,7 +11,7 @@ for accurate delays.
 
 
 #include <stdint.h>
-#include <util/delay.h>
+#include <util/delay_basic.h>
 #include <util/parity.h>
 #include <avr/io.h>
 
@@ -19,14 +19,16 @@ for accurate delays.
 #error sdi12.h requires a definition for F_CPU, none found.
 #endif
 
-//Timing is in micro seconds
-#define MAX_RESPONSE_DELAY      15000
-#define BREAK_DELAY             12100
-#define POST_BREAK_DELAY        8400
-#define SPACING                 830  // Microseconds
+//Timing for tiny was difficult, so calibrated manually: Expects attiny84 at 8Mhz
+#define SDI_SPACE_DELAY         _delay_loop_2(830*2 + 15);
+#define SDI_HALF_SPACE_DELAY    _delay_loop_2(830 + 5);
+#define SDI_BREAK_DELAY         _delay_loop_2(12000*2 + 200);
+#define SDI_POST_BREAK_DELAY    _delay_loop_2(8300*2 + 200);
+#define SDI_100MS_DELAY         _delay_loop_2(0);\
+                                        _delay_loop_2(0);
+//Other
 #define MAX_READ                76
-#define CYCLES_FOR_15MS         ( F_CPU * 15UL / 1000UL )
-#define CYCLES_PER_BIT_WAIT     10 //Just a guess, not tested nor calculated
+#define TIMEOUT_CYCLE_COUNT     30000
 
 //Use macros for values since ArduinoStudio screws up C enums
 typedef uint8_t LineDirection;
@@ -49,8 +51,8 @@ static volatile uint8_t* sdi_oport;  //Out port
 static volatile uint8_t*  sdi_iport;  //In port
 static volatile uint8_t  sdi_pin;   //Pin
 
-inline void sdi_set( Bool state );
-inline void sdi_set_direction( LineDirection dir );
+void sdi_set( Bool state );
+void sdi_set_direction( LineDirection dir );
 
 /*
 Initialize the module.
@@ -58,7 +60,7 @@ uint8_t*        dport    = Port address of data line direction register
 uint8_t*        port     = Port address for data line
 uint8_t         pin      = Pin # for data line
 */
-inline void sdi_init( volatile uint8_t* dport, volatile uint8_t* oport, volatile uint8_t* iport , uint8_t pin )
+void sdi_init( volatile uint8_t* dport, volatile uint8_t* oport, volatile uint8_t* iport , uint8_t pin )
 {
         sdi_dport = dport;
         sdi_oport  = oport;
@@ -68,23 +70,21 @@ inline void sdi_init( volatile uint8_t* dport, volatile uint8_t* oport, volatile
 
         //Set the data line to marking for 100 ms to clear all garbage and noise
         sdi_set( FALSE );
-        _delay_ms( 50 );
+        SDI_100MS_DELAY
         
 }
 
 /*
 Set the data line direction: input/output
 */
-inline void sdi_set_direction( LineDirection dir )
+void sdi_set_direction( LineDirection dir )
 {
          switch( dir )
          {
                 case INPUT:
                         *sdi_dport &= ~_BV( sdi_pin );
-                        //pinMode( 13, INPUT );
                         return;
                 case OUTPUT:
-                        //pinMode( 13, OUTPUT );
                         *sdi_dport |= _BV( sdi_pin );
                         return;
                         
@@ -94,7 +94,7 @@ inline void sdi_set_direction( LineDirection dir )
 /*
 Set the data line's state
 */
-inline void sdi_set( Bool state )
+void sdi_set( Bool state )
 {
         if( state )
                 *sdi_oport |= _BV( sdi_pin );
@@ -105,7 +105,7 @@ inline void sdi_set( Bool state )
 /*
 Read the data line's state
 */
-inline Bool sdi_get()
+Bool sdi_get()
 {
         if ( *sdi_iport & _BV( sdi_pin ) ) return TRUE;
         return FALSE;
@@ -115,27 +115,27 @@ inline Bool sdi_get()
 Sets the data line to marking ( 0 - 1.0 volts )
 # SDI12 uses negative logic.
 */
-inline void sdi_mark()
+void sdi_mark()
 {
         //Clear the bit since SDI12 uses reverse logic
         sdi_set( FALSE );
-        _delay_us( SPACING );
+        SDI_SPACE_DELAY
 }
 
 /*
 Sets the data line to flat/space ( 3.5 - 5.5 volts )
 */
-inline void sdi_space()
+void sdi_space()
 {
         //Set the bit
         sdi_set( TRUE );
-        _delay_us( SPACING );
+        SDI_SPACE_DELAY
 }
 
 /*
 Wait for the data line to be marking
 */
-inline void sdi_wait_mark()
+void sdi_wait_mark()
 {
         //Wait while pin is HIGH
         while( sdi_get() );
@@ -145,7 +145,7 @@ inline void sdi_wait_mark()
 /*
 Wait for the data line to be unmarked.
 */
-inline void sdi_wait_space()
+void sdi_wait_space()
 {
         //Wait while pin is low
         while( !sdi_get() );
@@ -153,40 +153,31 @@ inline void sdi_wait_space()
 }
 
 /*
-Wait for a bit's spacing to pass
-*/
-inline void sdi_wait_bit()
-{
-        _delay_us( SPACING );
-        return;
-}
-
-/*
 Read a char
 */
-inline uint8_t sdi_read()
+uint8_t sdi_read()
 {
         uint8_t ch = 0;
 
         //15ms is max allowed timing between request and response: wait for the start bit
-        unsigned long count = 15000;
+        unsigned long count = TIMEOUT_CYCLE_COUNT;
         while( !sdi_get() && count-- )
-                _delay_us( 1 );
+                _delay_loop_2(1);
                 
-        //If count == 0, response didn't come, return 0
+        //If count == 0, response didn't come, return 127
         if( !count )
-                return 0;
+                return 127;
                 
         
         //Wait for 1/2 bit spacing to set sample in the middle of start bit
-        _delay_us( SPACING / 2 );
+        SDI_HALF_SPACE_DELAY
         
         //Read all data bits
         uint8_t mask = 1;
         for( ; mask < 0x80 ; mask <<= 1 )
         {
                 //Wait for the middle of the next bit
-                sdi_wait_bit();
+                SDI_SPACE_DELAY
                 
                 if( !sdi_get() )
                         ch |= mask;
@@ -194,7 +185,8 @@ inline uint8_t sdi_read()
         }
         
         //Skip the stop and parity bits
-        _delay_us( SPACING*2 );
+        SDI_SPACE_DELAY
+        SDI_SPACE_DELAY
 
         //Otherwise return ch
         return ch;
@@ -203,11 +195,11 @@ inline uint8_t sdi_read()
 /*
 Write a char
 */
-inline void sdi_write( uint8_t ch )
+void sdi_write( uint8_t ch )
 {
         //Write the start bit
         sdi_set( TRUE ); //Start bit
-        _delay_us( SPACING );
+        SDI_SPACE_DELAY
         
         uint8_t mask = 1;
         for( ; mask & 0b01111111 ; mask <<= 1 )
@@ -225,7 +217,7 @@ inline void sdi_write( uint8_t ch )
         
         //Write stop bit
         sdi_set( FALSE );
-        _delay_us( SPACING );
+        SDI_SPACE_DELAY
         
         return;
 }
@@ -233,15 +225,15 @@ inline void sdi_write( uint8_t ch )
 /*
 Send a command and retrieve the response. 'command' must be null terminated.
 */
-inline Bool sdi_exchange( uint8_t* command, uint8_t* response )
+Bool sdi_exchange( uint8_t* command, uint8_t* response )
 {
           
         //Generate break ( 12ms of space )
         sdi_set_direction( OUTPUT );
         sdi_set( TRUE );
-        _delay_us( BREAK_DELAY );
+        SDI_BREAK_DELAY
         sdi_set( FALSE );
-        _delay_us( POST_BREAK_DELAY );
+        SDI_POST_BREAK_DELAY
 
         //Write all data
         uint8_t* c;
@@ -259,8 +251,8 @@ inline Bool sdi_exchange( uint8_t* command, uint8_t* response )
                 && idx < MAX_READ - 1 )
         {
                 response[ idx ] = sdi_read();
-                //if( response[ idx ] == 0 || response[ idx ] == 127 )
-                //  return FALSE;
+                if( response[ idx ] == 127 )
+                  return FALSE;
                   
                 idx++;
         }
