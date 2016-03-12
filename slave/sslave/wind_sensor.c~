@@ -61,7 +61,7 @@ char* slave_read( unsigned ch )
                   if(cross_flag++ > 1){
                      Hz = 0.4 * pow((-(wave_length - 1550)/wave_length), (25.0/26.0));
                      result = 1.677 * Hz + 0.4;
-                     dtostrf(result, 7,3,str);
+                     dtostrf(Hz, 7,3,str);
                      return str;
                   }
                   count = 0;
