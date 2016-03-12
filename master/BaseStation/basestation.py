@@ -14,9 +14,8 @@ def joinCb( saddr, scount ):
         print "Join from", hex( struct.unpack( "<H", saddr )[0] )
         try:
                 scount = struct.unpack( '<B', scount[0:1] )[0]
-                if scount > 0:
-                        slaves[saddr] = scount
-                        trans.accept( saddr )
+                slaves[saddr] = scount
+                trans.accept( saddr )
         except Exception, e:
                 print e
         return
@@ -25,12 +24,12 @@ def segCb( saddr, segno, data ):
         global pending_segments
         global segments_lock
         global logfiles
-        
+        print data
         
         try:
                 segments_lock.acquire()
                 if segno in pending_segments:
-                        del pending_segments[segno]
+                        pending_segments.remove( segno )
                 else:
                         #Don't want duplicates
                         return
@@ -233,7 +232,7 @@ inv   <addr>     -- Invite a slave to join the network
 rm    <addr>     -- Force remove a slave from the network
 add   <addr> <s> -- Force add a slave to the network
                         *<s> is slave sensor count
-reset <addr>     -- Request a slave reset
+reset <addr>     -- [X]Request a slave reset
                         *addr 0xFFFF is broadcast
 config [opts...] -- [X]Change some configuration
 mode inter|norm  -- Switch between interactive and normal operation.
@@ -251,13 +250,15 @@ home            = os.path.expanduser("~")
 logs_lock        = threading.Lock()
 logfiles        = {}
 slaves          = {}
-sample_period   = 10
-prepare_period  = 10
-request_timeout = 5
+sample_period   = 20
+prepare_period  = 20
+request_timeout = 10
 retry_max       = 5
 pending_segments = []
 segments_lock   = threading.Lock()
 stop_loop       = False
+max_invite_addr = 50
+invite_range    = range( 1, 10 )
 
 
 #Setup
@@ -286,20 +287,25 @@ while not stop_loop:
         try:
                 #Normal mode exclusive operations
                 if not interactive:
-                        trans.invite("\xFF\xFF")
+                        for i in invite_range:
+                                addr = struct.pack( ">H", i )
+                                trans.invite(addr)
+                                time.sleep( 0.5 )
+                        time.sleep( 5 )
+                        invite_range = range( invite_range[-1], invite_range[-1] + 10 )
                         trans.user( "\xFF\xFF", "\x00" )
                         time.sleep( prepare_period )
                         for s in slaves:
-                            try:
-                                segments_lock.acquire()
-                                pending_segments = range( 0, slaves[s] )
+                                try:
+                                        segments_lock.acquire()
+                                        pending_segments = range( 0, slaves[s] )
+                                finally:
+                                        segments_lock.release()
                                 for i in range( 0, retry_max ):
                                         if len( pending_segments ) == 0:
                                                 break
                                         trans.request( s, pending_segments )
                                         time.sleep( request_timeout )
-                            finally:
-                                segments_lock.release()
                         if sample_period > prepare_period:
                                 time.sleep( sample_period - prepare_period )
                 

@@ -33,7 +33,7 @@ char* get_type(unsigned int ss)
 {
   if(!exchange(ss, (char*)"t", 1, NUM_RETRIES, MEASURE_TIMEOUT))
   {
-    Serial.println("timeout");
+    //Serial.println("timeout");
     return 0;
   }
   else
@@ -41,12 +41,12 @@ char* get_type(unsigned int ss)
     char* data = (char*)&incoming_packet[1];
     if(data[0] == 'e' && data[1] == 'r' && data[2] == 'e')
     {  
-      Serial.println("err");
+     // Serial.println("err");
       return 0;
     }
     else
     {
-      Serial.println("noerr");
+      //Serial.println("noerr");
       return (char*)data;
     }
   }

@@ -4,7 +4,7 @@
 #include <XBee.h>
 #include <SoftwareSerial.h>
 
-#define DEBUG( s ) Serial.print( s )
+#define DEBUG( s )  Serial.print( s )
 
 #define MAX_SEGMENTS    10
 #define MS_AT_TIMEOUT   100

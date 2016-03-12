@@ -44,14 +44,10 @@ int slave_apply( unsigned ch )
         return 1;
 };
 
-Slave sslave =
-{
-  .id = 102,
-  .type = 2,
-  .name = "itemp",
-  .m = 10, .d = 19, .y = 15,
-  .rcount = 1,
-  .wcount = 0,
-  .ilen = 25,
-  .info = "Internal AVR termperature"
-};
+int   slave_id = 102;
+char* slave_type = "itemp";
+char* slave_name = "internal tempurature";
+char  slave_init_date[3] = { 27, 2, 16 };
+char  slave_rcount = 1;
+char  slave_wcount = 0;
+char* slave_info = "A simple ADC tempurature sensor using the Attiny84's intenal thermometer.";

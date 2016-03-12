@@ -34,7 +34,7 @@ int main(void)
   _delay_ms(100);
   
   //An initial packet, not sure what it's for, but the other code had it
-  prepare_packet("init", 8);
+  prepare_packet("", 0);
   spiX_put(0);
   
   unsigned char input;

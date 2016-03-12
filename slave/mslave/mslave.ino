@@ -83,7 +83,7 @@ void setup(){
   Serial.begin(9600);
   xs.begin(9600);
   delay(100);
-  Serial.println("started...");
+  Serial.println("started...\n");
   message_init(sslave_pins, sslave_pin_count);
   update_slaves();
 

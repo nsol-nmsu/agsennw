@@ -63,11 +63,11 @@ int mstrans::init( SoftwareSerial& ss, InviteCb invcb, UserCb usrcb )
                 return 1;
         }
         
-        _address = resp.getValue()[1] | (resp.getValue()[0] << 8 );
+       // _address = resp.getValue()[1] | (resp.getValue()[0] << 8 );
         
         //Request address change
         retries = 5;
-        AtCommandRequest my_at( (uint8_t*)"MY", (uint8_t*)&_address, 2 );
+        AtCommandRequest my_at( (uint8_t*)"MY", resp.getValue(), 2 );
         while( retries-- )
         {
                 _xbee.send( sl_at );
@@ -319,8 +319,6 @@ void mstrans::_handle_get_request( uint8_t* data )
                 for( int i = 0 ; i < request_segs ; i++ )
                         seg_nums[i] = data[ i + 1 ];
         }
-
-        Serial.print( "Request segs is " );Serial.println( request_segs );
         
         for( int i = 0 ; i < request_segs ; i++ )
         {

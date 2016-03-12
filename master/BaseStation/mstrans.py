@@ -99,10 +99,7 @@ class MSTrans:
                 try:
                         data = struct.pack( "<BBB", self.ptype['INVITE'], 0, 0 )
                         data = data[0:1] + self._csum( data ) + data[2:] 
-                        for i in range( 0 , 5 ):
-                                self.xbee.tx( dest_addr=slave, data=data )
-                                time.sleep( 1 )
-                                
+                        self.xbee.tx( dest_addr=slave, data=data )
                 except Exception, e:
                         print e
 
