@@ -39,7 +39,7 @@ char* slave_read( unsigned ch )
    uint8_t sx = 0;
    int i = 1000;
    unsigned int count = 0;
-   static char str[15];
+   static char str[20];
 
    while(i--){
       rx = (analogGet(ADC_1) > THRESH)? 1 : 0;
@@ -61,8 +61,7 @@ char* slave_read( unsigned ch )
                   if(cross_flag++ > 1){
                      Hz = 0.4 * pow((-(wave_length - 1550)/wave_length), (25.0/26.0));
                      result = 1.677 * Hz + 0.4;
-                     dtostrf(result, 7,3,str);
-                     return str;
+                     goto end;
                   }
                   count = 0;
                   break;
@@ -71,7 +70,19 @@ char* slave_read( unsigned ch )
       }
    }
 
-   dtostrf(result, 7,3,str);
+end:
+   int i = 0;
+   str[i++] = 'w'; str[i++] = 'i'; str[i++] = 'n'; str[i++] = 'd';
+   str[i++] = ':';
+   dtostrf(result, 5,1,str);
+   i += 5;
+   str[i++] = ':';
+   str[i++] = 'm';
+   str[i++] = 'p';
+   str[i++] = 'h';
+   str[i++] = '\n';
+   str[i++] = 0;
+
    return str;
 };
 
