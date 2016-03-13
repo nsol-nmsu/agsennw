@@ -103,8 +103,8 @@ void spiX_initslave( char spi_mode )
     USI_DIR_REG = (1<<USI_DATAOUT_PIN);                      // Outputs.
   USI_DIR_REG &= ~((1<<USI_DATAIN_PIN) | (1<<USI_CLOCK_PIN) | (1<<SPI_SS_PIN));// Inputs.
   USI_OUT_REG |= (1<<USI_DATAIN_PIN) | (1<<USI_CLOCK_PIN) ;  // Pull-ups. We don't want to configure SS pin as a pullup
-    PINCHANGE |= (1<<SPI_SS_PIN);  //configure interrupt for slave select
-  GIMSK |= (1<<PINFLAG);        //enable interrupt for slave select
+    //PINCHANGE |= (1<<SPI_SS_PIN);  //configure interrupt for slave select
+  //GIMSK |= (1<<PINFLAG);        //enable interrupt for slave select
 
   // Configure USI to 3-wire slave mode with overflow interrupt.
   USICR = (1<<USIWM0) | (1<<USIOIE) |

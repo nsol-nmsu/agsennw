@@ -79,7 +79,9 @@ int main(void)
       //Send the prepared packet
       send_packet();
     }
-        
+    if(waiting_measure){
+       slave_run_measure();
+    }
     
   } while(1);      // Loop forever...
 }
@@ -178,6 +180,7 @@ void prep_response(char r)
       //Wait for measurment
       unsigned wait = slave_measure();
       prepare_packet( from_int(wait), sizeof( unsigned ) );
+      waiting_measure = 1;
     }
       break;
       

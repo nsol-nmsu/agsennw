@@ -20,6 +20,9 @@ int slave_init();
 //Initiates a measurement, returns time until complete
 unsigned slave_measure();
 
+//run measurments
+void slave_run_measure();
+
 //Reads a measurment, returns measurment as string
 char* slave_read( unsigned ch );
 
