@@ -4,7 +4,7 @@
 #include <XBee.h>
 #include <SoftwareSerial.h>
 
-#define DEBUG( s )  Serial.print( s )
+#define DEBUG( s )  ;//Serial.print( s )
 
 #define MAX_SEGMENTS    10
 #define MS_AT_TIMEOUT   100
@@ -19,7 +19,7 @@
 #define MSPACKET_INVITE         5       //Broadcast by master
 #define MSPACKET_ACCEPT         6       //Master to slave, accept join request
 
-#define MS_FREE_NETWORK         1       //Starting network of all slaves
+//#define MS_FREE_NETWORK         1       //Starting network of all slaves
 
 typedef void (*UserCb)( uint8_t* data );
 typedef void (*InviteCb)( uint8_t* info );

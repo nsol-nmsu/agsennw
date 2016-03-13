@@ -11,7 +11,7 @@ int slave_init()
 {
         sdi_init(&DDRB, &PORTB, &PINB, 0);
         return 0;
-}
+};
 
 unsigned slave_measure( unsigned ch )
 {
@@ -25,6 +25,11 @@ unsigned slave_measure( unsigned ch )
         return wait * 1000;
 };
 
+void slave_run_measure()
+{
+        return;
+};
+
 static int next_val( uint8_t* str)
 {
         int i = 0;
@@ -34,7 +39,7 @@ static int next_val( uint8_t* str)
                         && str[i] != '\n' 
                         && str[i] != '\0' );
         return i;
-}
+};
 
 char* slave_read( unsigned ch )
 {
@@ -103,7 +108,7 @@ char* slave_read( unsigned ch )
 int slave_write( const char* msg, unsigned ch )
 {
         return 1;
-}
+};
 
 int slave_apply( unsigned ch )
 {

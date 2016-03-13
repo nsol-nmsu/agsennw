@@ -14,11 +14,16 @@ int slave_init()
 {
   analogEnableDefault();
   return 0;
-}
+};
 
 unsigned slave_measure()
 {
         return 0;
+};
+
+void slave_run_measure()
+{
+        return;
 };
 
 
@@ -39,7 +44,7 @@ char* slave_read( unsigned ch )
 int slave_write( const char* msg, unsigned ch )
 {
         return 1;
-}
+};
 
 int slave_apply( unsigned ch )
 {

@@ -8,22 +8,27 @@ A dummy slave.  Increments it's output every request.
 int slave_init()
 {
         return 0;
-}
+};
 
 unsigned slave_measure( unsigned ch )
 {
         return 0;
 };
 
+void slave_run_measure()
+{
+        return;
+};
+
 char* slave_read( unsigned ch )
 {
-  return "dummy:dummyValue:dummyUnit";
+  return "dummy:dummyValue:dummyUnit\n";
 };
 
 int slave_write( const char* msg, unsigned ch )
 {
         return 1;
-}
+};
 
 int slave_apply( unsigned ch )
 {

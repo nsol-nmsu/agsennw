@@ -81,6 +81,7 @@ int main(void)
     }
     if(waiting_measure){
        slave_run_measure();
+       waiting_measure = 0;
     }
     
   } while(1);      // Loop forever...
