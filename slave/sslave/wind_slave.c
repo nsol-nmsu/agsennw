@@ -84,10 +84,11 @@ void slave_run_measure()
 
 char* slave_read( unsigned ch )
 {
+   static char str[20];
    int i = 0;
    str[i++] = 'w'; str[i++] = 'i'; str[i++] = 'n'; str[i++] = 'd';
    str[i++] = ':';
-   dtostrf(wind_slave, 5,1,str);
+   dtostrf(wind_speed, 5,1,str);
    i += 5;
    str[i++] = ':';
    str[i++] = 'm';
