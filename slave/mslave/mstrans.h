@@ -19,7 +19,7 @@
 #define MSPACKET_INVITE         5       //Broadcast by master
 #define MSPACKET_ACCEPT         6       //Master to slave, accept join request
 
-#define MS_FREE_NETWORK         1       //Starting network of all slaves
+//#define MS_FREE_NETWORK         1       //Starting network of all slaves
 
 typedef void (*UserCb)( uint8_t* data );
 typedef void (*InviteCb)( uint8_t* info );

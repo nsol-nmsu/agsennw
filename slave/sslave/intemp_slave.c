@@ -12,11 +12,16 @@ int slave_init()
 {
   analogEnableCustom(PS_64, ADCREF_INT );
   return 0;
-}
+};
 
 unsigned slave_measure( unsigned ch )
 {
         return 0;
+};
+
+void slave_run_measure()
+{
+        return;
 };
 
 
@@ -37,7 +42,7 @@ char* slave_read( unsigned ch )
 int slave_write( const char* msg, unsigned ch )
 {
         return 1;
-}
+};
 
 int slave_apply( unsigned ch )
 {

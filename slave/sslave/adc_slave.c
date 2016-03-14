@@ -21,6 +21,11 @@ unsigned slave_measure( unsigned ch )
         return 0;
 };
 
+void slave_run_measure()
+{
+        return;
+}
+
 
 char* slave_read( unsigned ch )
 {
