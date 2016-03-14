@@ -88,7 +88,7 @@ char* slave_read( unsigned ch )
    int i = 0;
    str[i++] = 'w'; str[i++] = 'i'; str[i++] = 'n'; str[i++] = 'd';
    str[i++] = ':';
-   dtostrf(wind_speed, 5,1,str);
+   dtostrf(wind_speed, 5,1,&str[i]);
    i += 5;
    str[i++] = ':';
    str[i++] = 'm';
