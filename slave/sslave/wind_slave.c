@@ -7,12 +7,15 @@ A 03101 Wind Anemometer for sensing wind speeds.
 #include <stdlib.h>
 #include <math.h>
 
-#define HI 0x0F     //bit value 00111
-#define LO 0x70     //bit value 11000,
+#define HI 0x0F     //bit value 0001111 to simulate low crossing to high
+#define LO 0x70     //bit value 1110000 to simulate high crossing to low
 
+// only for reference, with the NSOL slave boards, 03101 typically has
+// a threshold reading of 495
 static int THRESH = 495;
 static float wind_speed = 0;
 
+// Calculate thresh value at start up once
 void slave_init()
 {
   analogEnableCustom(PS_128, ADCREF_VCC);
@@ -29,12 +32,16 @@ void slave_init()
 
    THRESH = (max + min) / 2;
 }
-
+// Give run_measure a 2 second window to calculate wind speed
 unsigned slave_measure( unsigned ch )
 {
-   return 3;
+   return 2000;
 }
-
+/*
+*  Zero crossing algorithm to calculate the frequency of the given
+*  voltage in ADC_1 and use it to calculate wind speeds (U) using the given
+*  expression U = MX + B, where M = multiplier, X = Hertz, B = Offset
+*/ 
 void slave_run_measure()
 {
    wind_speed               = 0;
@@ -66,8 +73,11 @@ void slave_run_measure()
          case HI:
                   if(cross_flag++ > 1){
                      wave_length += count;
-                     Hz = 0.003138664 * pow((-(wave_length - 1485865)/wave_length), (5000000.0/5007055.0));
-                     wind_speed = 1.677 * Hz + 0.4;
+                     // Note: this expression best fits the behavior
+                     // of Hz given the slave runs at 8MHz with no defined
+                     // delay between samples counted, (subject to change)
+                     Hz = 0.003138664 * pow((-(wave_length - 1485865)/wave_length), (5000000.0/5020055.0));
+                     wind_speed = 1.677 * Hz + 0.4; // convertion to mph
                      return;
                   }
                   wave_length = count;
@@ -111,7 +121,7 @@ int slave_apply( unsigned ch )
 }
 
 int slave_id = 105;
-char* slave_type = "Anemometer";
+char* slave_type = "anemo";
 char* slave_name = "itemp";
 char slave_init_date[3] = {27,2,16};
 char slave_rcount = 1;
