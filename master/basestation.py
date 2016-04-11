@@ -29,8 +29,6 @@ def segCb( saddr, segno, data ):
         global pending_segments
         global segments_lock
         global logfiles
-	print "from", struct.unpack(">H", saddr )
-        print data
 
         lines  = data.split("\n")
         header = lines[0].split(":")
@@ -49,17 +47,23 @@ def segCb( saddr, segno, data ):
                         return
         
         try:
-                segments_lock.acquire()
+                segments_lock.acquire(True)
+		print "before", pending_segments
                 if segno in pending_segments[saddr][1]:
                         pending_segments[saddr][1].remove( segno )
                 else:
                         #Don't want duplicates
                         return
+		
                 #If done with all segments, remove slave
-                if len( pending_segments[saddr] ) == 0:
+                if len( pending_segments[saddr][1] ) == 0:
                         del pending_segments[saddr]
+		print "from", struct.unpack(">H", saddr )
+	        print data
+		print "after", pending_segments
         except Exception, e:
                 print e
+		return
         finally:
                 segments_lock.release()
         
@@ -202,23 +206,24 @@ def rmCb( params ):
 def addCb( params ):
         global slaves
         
-        a = to_addr( params[0] )
+	for i in range(0, len(params), 2):
+        	a = to_addr( params[i] )
         
-        try:
-                c = int( params[1] )
-        except IndexError:
-                return "Must specify the hub's slave count\n"
-        except ValueError:
-                return "Invalid slave count, must be decimal integer\n"
+        	try:
+                	c = int( params[i+1] )
+        	except IndexError:
+                	return "Must specify the hub's slave count\n"
+        	except ValueError:
+                	return "Invalid slave count, must be decimal integer\n"
 
-        if not a == None:
-                if a in slaves:
-                        return "Slave already joined\n"
-                else:
-                        slaves[a] = c
-                        return "Add Done\n"
-        else:
-                return "Invalid address\n"
+	        if not a == None:
+        	        if a in slaves:
+                	        return "Slave already joined\n"
+	                else:
+        	                slaves[a] = c
+        	else:
+                	return "Invalid address\n"
+	return "Add Done"
 
 def rstCb( params ):
         global trans
@@ -271,12 +276,12 @@ logfiles        = {}
 slaves          = {}
 sample_period   = 300
 prepare_period  = 15
-request_timeout = 1
+request_timeout = 2
 retry_max       = 5
 pending_segments = {}
 segments_lock   = threading.Lock()
 stop_loop       = False
-max_invite_addr = 50
+max_invite_addr = 40
 
 
 #Setup
@@ -308,6 +313,7 @@ print "Running..."
 
 #Basic operations loop
 while not stop_loop:
+	delay_offset = 0
         try:
                 #Normal mode exclusive operations
                 if not interactive:
@@ -315,7 +321,9 @@ while not stop_loop:
                                 addr = struct.pack( ">H", i )
                                 trans.invite(addr)
                                 time.sleep( 0.1 )
+				delay_offset += 0.1
                         time.sleep( 1 )
+			delay_offset += 1
                         
                         for s in slaves:
                                 try:
@@ -327,17 +335,28 @@ while not stop_loop:
                         while len( pending_segments ) > 0:
                                 trans.user( "\xFF\xFF", "\x00" )
                                 time.sleep( prepare_period )
+				delay_offset += prepare_period
                                 
                                 #Iterate through slaves instead of pending_segments
                                         #because pending_segments will be modified
                                 for s in slaves:
-                                        if s in pending_segments and pending_segments[s][0] > 0:
-                                                trans.request( s, pending_segments[s][1] )
-                                                pending_segments[s] = (pending_segments[s][0]-1,
-                                                                        pending_segments[s][1])
-                                                time.sleep( request_timeout )
-                        if sample_period > prepare_period + max_invite_addr*0.5:
-                                time.sleep( sample_period - prepare_period - max_invite_addr*0.1 )
+					try:
+						segments_lock.acquire(True)
+                                       		if s in pending_segments:
+							if pending_segments[s][0] > 0:
+                                               			trans.request( s, pending_segments[s][1] )
+                                             			pending_segments[s] = (pending_segments[s][0]-1,
+                                                		       		                	pending_segments[s][1])
+								segments_lock.release()
+                                               			time.sleep( request_timeout )
+								delay_offset += request_timeout
+							else:
+								del pending_segments[s]
+					finally:
+						if segments_lock.locked():
+							segments_lock.release()
+                        if sample_period > delay_offset:
+                                time.sleep( sample_period - delay_offset )
                 
                 #Mode common operations
                 cmdserver.do_all()

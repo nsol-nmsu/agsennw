@@ -4,6 +4,10 @@ import time
 import os
 import socket
 
+def finish():
+        sock.close()
+        quit()
+
 workDir = "./"
 
 #Setup socket
@@ -18,8 +22,17 @@ except socket.error, e:
 try:
         while True:
                 sock.send( raw_input( "?>" ) )
-                sock.settimeout( 5.0 )
-                print sock.recv( 512 )
-except KeyboardInterrupt:
-        sock.close()
-        quit()
+                resp = sock.recv( 2048 )
+                
+                if resp == "":
+                        print "Connection terminated by server"
+                        finish()
+                
+                new = resp
+                while not "\x03" in resp and not new == "" :
+                        new = sock.recv( 2048 )
+                        resp += new
+                
+                print resp[0:resp.find('\x03')]
+except ( KeyboardInterrupt, EOFError ):
+        finish()

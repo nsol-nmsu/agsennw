@@ -7,39 +7,47 @@ A 03101 Wind Anemometer for sensing wind speeds.
 #include <stdlib.h>
 #include <math.h>
 
-#define THRESH 499 //499 ADC_1 thresh, any other would be 0
 #define HI 0x0F     //bit value 00111
 #define LO 0x70     //bit value 11000,
+
+static int THRESH = 495;
+static float wind_speed = 0;
 
 void slave_init()
 {
   analogEnableCustom(PS_128, ADCREF_VCC);
+   int max = 0;
+   int min = 1024;
+   int current = 0;
+   int j = 9000;
+
+   while(j--){
+      current = analogGet(ADC_1);
+      max = (current > max)? current : max;
+      min = (current < min)? current : min;
+   }
+
+   THRESH = (max + min) / 2;
 }
 
 unsigned slave_measure( unsigned ch )
 {
-   return 0;
+   return 3;
 }
 
-int slave_run_measure()
+void slave_run_measure()
 {
-   return 0;
-}
-
-char* slave_read( unsigned ch )
-{
-   double wave_length = 0;
-   double result = 0;
-   double Hz = 0;
-   uint8_t raw = 0x55; //difuse byte to avoid false crossing
-   unsigned int temp_raw = 0;
-   uint8_t smooth = 0x55;
-   uint8_t cross_flag = 0;
-   uint8_t rx = 0;
-   uint8_t sx = 0;
-   int i = 1000;
-   unsigned int count = 0;
-   static char str[20];
+   wind_speed               = 0;
+   double wave_length       = 0;
+   double Hz                = 0;
+   uint8_t raw              = 0x55; //difuse byte to avoid false crossing
+   unsigned int temp_raw    = 0;
+   uint8_t smooth           = 0x55;
+   uint8_t cross_flag       = 0;
+   uint8_t rx               = 0;
+   uint8_t sx               = 0;
+   int i                    = 9000;
+   unsigned int count       = 0;
 
    while(i--){
       rx = (analogGet(ADC_1) > THRESH)? 1 : 0;
@@ -56,13 +64,13 @@ char* slave_read( unsigned ch )
       switch(smooth){
          case LO:
          case HI:
-                  wave_length = (2.0 * count);
-
                   if(cross_flag++ > 1){
-                     Hz = 0.4 * pow((-(wave_length - 1550)/wave_length), (25.0/26.0));
-                     result = 1.677 * Hz + 0.4;
-                     goto end;
+                     wave_length += count;
+                     Hz = 0.003138664 * pow((-(wave_length - 1485865)/wave_length), (5000000.0/5007055.0));
+                     wind_speed = 1.677 * Hz + 0.4;
+                     return;
                   }
+                  wave_length = count;
                   count = 0;
                   break;
          default:
@@ -70,16 +78,21 @@ char* slave_read( unsigned ch )
       }
    }
 
-end:
+   wind_speed = 0;
+   return;
+}
+
+char* slave_read( unsigned ch )
+{
    int i = 0;
-   str[i++] = 'a'; str[i++] = 'd'; str[i++] = 'c';
+   str[i++] = 'w'; str[i++] = 'i'; str[i++] = 'n'; str[i++] = 'd';
    str[i++] = ':';
-   dtostrf(result, 5,1,str);
+   dtostrf(wind_speed, 5,1,str);
    i += 5;
    str[i++] = ':';
-   str[i++] = 'r';
-   str[i++] = 'a';
-   str[i++] = 'w';
+   str[i++] = 'm';
+   str[i++] = 'p';
+   str[i++] = 'h';
    str[i++] = '\n';
    str[i++] = 0;
 
@@ -103,4 +116,3 @@ char slave_init_date[3] = {27,2,16};
 char slave_rcount = 1;
 char slave_wcount = 0;
 char* slave_info = "03101 Wind Anemometer";
-
