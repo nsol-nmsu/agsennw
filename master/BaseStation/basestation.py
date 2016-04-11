@@ -2,16 +2,21 @@
 
 # Xbee Transport
 # Base station implementation
+"""
+This script works, but was written quickly and not very nicely.
+Should be rewritten when possible.
+"""
 
 import time
 from serial import Serial
 from mstrans import MSTrans
 import struct, sys, os, socket, threading
 from cmd_server import CmdServer
+import re
 
 #MSTrans callbacks
 def joinCb( saddr, scount ):
-        print "Join from", hex( struct.unpack( "<H", saddr )[0] )
+        print "Join from", hex( struct.unpack( ">H", saddr )[0] )
         try:
                 scount = struct.unpack( '<B', scount[0:1] )[0]
                 slaves[saddr] = scount
@@ -24,19 +29,8 @@ def segCb( saddr, segno, data ):
         global pending_segments
         global segments_lock
         global logfiles
+	print "from", struct.unpack(">H", saddr )
         print data
-        
-        try:
-                segments_lock.acquire()
-                if segno in pending_segments:
-                        pending_segments.remove( segno )
-                else:
-                        #Don't want duplicates
-                        return
-        except Exception, e:
-                print e
-        finally:
-                segments_lock.release()
 
         lines  = data.split("\n")
         header = lines[0].split(":")
@@ -44,8 +38,33 @@ def segCb( saddr, segno, data ):
         pin    = header[0]
         lines  = lines[1:-1]
         
+        """This is a temporary fix, we sometimes get data with missing header fields
+        this should by increasing the timeout in the mslave code, but since we can't
+        reprogram the hubs, this basestation solution will have to do"""
+        
+        if len( header ) !=  2 \
+                 or not re.match("[A-Za-z0-9\"_\"\"-\"]+", header[1] ) \
+                 or not re.match("[0-9]+", header[0] ) \
+                 or len( header[1] ) == 0 or len( header[0] ) == 0:
+                        return
+        
+        try:
+                segments_lock.acquire()
+                if segno in pending_segments[saddr][1]:
+                        pending_segments[saddr][1].remove( segno )
+                else:
+                        #Don't want duplicates
+                        return
+                #If done with all segments, remove slave
+                if len( pending_segments[saddr] ) == 0:
+                        del pending_segments[saddr]
+        except Exception, e:
+                print e
+        finally:
+                segments_lock.release()
+        
         #Manage logging operations
-        naddr   = struct.unpack( "<H", saddr )
+        naddr   = struct.unpack( ">H", saddr )
         
         if not os.path.exists( wdir + "/logs" ):
                 os.makedirs( wdir + "/logs" )
@@ -55,7 +74,7 @@ def segCb( saddr, segno, data ):
                 logs_lock.acquire()
                 #If files arent already added then add them
                 if not logname in logfiles:
-                        logf = open( logname, "w" )
+                        logf = open( logname, "w", 0 )
                         
                         #Put header
                         logf.write( "Time (UTC), Time (Secs), Value Type, Value, Unit\n")
@@ -132,13 +151,13 @@ def cdCb( params ):
 def to_addr( s ):
         try:
                 if s[0:2] == "0x":
-                        return struct.pack( "<H", int( s, 16 ) )
+                        return struct.pack( ">H", int( s, 16 ) )
                 elif s[0:2] == "0c":
-                        return struct.pack( "<H", int( s, 8 ) )
+                        return struct.pack( ">H", int( s, 8 ) )
                 elif s[0:2] == "0b":
-                        return struct.pack( "<H", int( s, 2 ) )
+                        return struct.pack( ">H", int( s, 2 ) )
                 else:
-                        return struct.pack( "<H", int( s ) )
+                        return struct.pack( ">H", int( s ) )
                         
         except ValueError:
                 return None
@@ -146,7 +165,7 @@ def to_addr( s ):
 def slCb( params ):
         ret = ""
         for s in slaves:
-                naddr = struct.unpack( "<H", s )[0]
+                naddr = struct.unpack( ">H", s )[0]
                 if len(params) > 0:
                         if params[0] == "x":
                                 strep = hex( naddr )
@@ -245,24 +264,29 @@ mode inter|norm  -- Switch between interactive and normal operation.
 
 #Env
 interactive     = False
-wdir            = "."
 home            = os.path.expanduser("~")
+wdir            = sys.argv[2]
 logs_lock        = threading.Lock()
 logfiles        = {}
 slaves          = {}
-sample_period   = 20
-prepare_period  = 20
-request_timeout = 10
+sample_period   = 300
+prepare_period  = 15
+request_timeout = 1
 retry_max       = 5
-pending_segments = []
+pending_segments = {}
 segments_lock   = threading.Lock()
 stop_loop       = False
 max_invite_addr = 50
-invite_range    = range( 1, 10 )
 
 
 #Setup
-cmdserver = CmdServer( os.path.expanduser("~") + "/.msnet/msnet_cmd.sock", helpCb )
+if not os.path.isdir( home + "/.msnet" ):
+	try:
+		os.makedirs( home + "/.msnet" )
+	except:
+		print "Could not create directory", home + "/.msnet"
+		killCb( [] )
+cmdserver = CmdServer( home + "/.msnet/msnet_cmd.sock", helpCb )
 commands = {
                 "kill"  : ( killCb, False),
                 "cd"    : ( cdCb, True ),
@@ -287,27 +311,33 @@ while not stop_loop:
         try:
                 #Normal mode exclusive operations
                 if not interactive:
-                        for i in invite_range:
+                        for i in range( 1, max_invite_addr ):
                                 addr = struct.pack( ">H", i )
                                 trans.invite(addr)
-                                time.sleep( 0.5 )
-                        time.sleep( 5 )
-                        invite_range = range( invite_range[-1], invite_range[-1] + 10 )
-                        trans.user( "\xFF\xFF", "\x00" )
-                        time.sleep( prepare_period )
+                                time.sleep( 0.1 )
+                        time.sleep( 1 )
+                        
                         for s in slaves:
                                 try:
                                         segments_lock.acquire()
-                                        pending_segments = range( 0, slaves[s] )
+                                        pending_segments[s] = ( 5, range(0, slaves[s] ) )
                                 finally:
                                         segments_lock.release()
-                                for i in range( 0, retry_max ):
-                                        if len( pending_segments ) == 0:
-                                                break
-                                        trans.request( s, pending_segments )
-                                        time.sleep( request_timeout )
-                        if sample_period > prepare_period:
-                                time.sleep( sample_period - prepare_period )
+                        
+                        while len( pending_segments ) > 0:
+                                trans.user( "\xFF\xFF", "\x00" )
+                                time.sleep( prepare_period )
+                                
+                                #Iterate through slaves instead of pending_segments
+                                        #because pending_segments will be modified
+                                for s in slaves:
+                                        if s in pending_segments and pending_segments[s][0] > 0:
+                                                trans.request( s, pending_segments[s][1] )
+                                                pending_segments[s] = (pending_segments[s][0]-1,
+                                                                        pending_segments[s][1])
+                                                time.sleep( request_timeout )
+                        if sample_period > prepare_period + max_invite_addr*0.5:
+                                time.sleep( sample_period - prepare_period - max_invite_addr*0.1 )
                 
                 #Mode common operations
                 cmdserver.do_all()
