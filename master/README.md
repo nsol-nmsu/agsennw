@@ -5,13 +5,13 @@ station.  The base station collects and logs sensor data from it's
 connected hubs.
 
 ## class MSTrans:
-This class implements XBee communication with the sensor hubs.  The class resides in the mstrans.py file and it's simple communication protocol can be found [here](#communication-protocol-master-perspective-).
-   * [MSTrans( tty, net, joinCb, segCb )](#mstrans-tty-net-joincb-segcb-)
-   * [kill()](#kill-)
-   * [invite( slave, info )](#invite-slave-info-)
-   * [accept( addr )](#accept-addr-)
-   * [request( addr, segs )](#request-addr-segs-)
-   * [user( addr, action )](#user-addr-action-)
+This class implements XBee communication with the sensor hubs.  The class resides in the mstrans.py file and it's simple communication protocol can be found [here](#communication-protocol-master-perspective).
+   * [MSTrans( tty, net, joinCb, segCb )](#mstrans-tty-net-joincb-segcb)
+   * [kill()](#kill)
+   * [invite( slave, info )](#invite-slave-info)
+   * [accept( addr )](#accept-addr)
+   * [request( addr, segs )](#request-addr-segs)
+   * [user( addr, action )](#user-addr-action)
 
 ---
 
@@ -116,15 +116,15 @@ $: byte array of information to be handled by user callback]
 ---
 
 ## class CmdServer
-This class implements a simple unix socket listener for command line control of the base station.  The class allows users to register commands and their callbacks, and to flag whether the operation will affect the state of the basestation.  If the action will affect the state of the basesation then it is added to a queue and preformed when the user calls [do_action()](#do_action-) of [do_all()](#do_all-).  This class resides in the cmd_server.py file.
+This class implements a simple unix socket listener for command line control of the base station.  The class allows users to register commands and their callbacks, and to flag whether the operation will affect the state of the basestation.  If the action will affect the state of the basesation then it is added to a queue and preformed when the user calls [do_action()](#do_action) of [do_all()](#do_all).  This class resides in the cmd_server.py file.
 
-   * [CmdServer( addr, defcmd )](#cmdserver-addr-defcmd-)
-   * [add( command, action, clean )](#add-command-action-clean-)
-   * [add_all( commands )](#add_all-commands-)
-   * [start()](#start-)
-   * [kill()](#kill-)
-   * [do_action()](#do_action-)
-   * [do_all()](#do_all-)
+   * [CmdServer( addr, defcmd )](#cmdserver-addr-defcmd)
+   * [add( command, action, clean )](#add-command-action-clean)
+   * [add_all( commands )](#add_all-commands)
+   * [start()](#start)
+   * [kill()](#kill)
+   * [do_action()](#do_action)
+   * [do_all()](#do_all)
 
 ---
 
