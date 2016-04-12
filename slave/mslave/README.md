@@ -6,11 +6,11 @@ This directory contains the files needed to implement the network sensor hub cod
 This file provides the mstrans namespace that implements the hub's communication
 with it's master.
 
-   * [int mstrans.init( SoftwareSerial& ss, InviteCb invcb, UserCb usercb )](#int-mstrans-init-softwareserial-ss-invitecb-invcb-usercb-usercb)
-   * [int mstrans.add_segment( int len )](#int-mstrans-add-segment-int-len)
-   * [int mstrans.set_segment( unsigned segnum, uint8_t* data, unsigned len)](#int-mstrans-set-segment-unsigned-segnum-uint8-t-data-unsigned-len)
-   * [int mstrans.join( uint8_t* info, uint8_t len )](#int-mstrans-join-uint8-t-info-uint8-t-len)
-   * [void mstrans.loop()](#void-mstrans-loop)
+   * [int mstrans.init( SoftwareSerial& ss, InviteCb invcb, UserCb usercb )](#int-mstransinit-softwareserial-ss-invitecb-invcb-usercb-usercb-)
+   * [int mstrans.add_segment( int len )](#int-mstransadd_segment-int-len-)
+   * [int mstrans.set_segment( unsigned segnum, uint8_t* data, unsigned len)](#int-mstransset_segment-unsigned-segnum-uint8_t-data-unsigned-len)
+   * [int mstrans.join( uint8_t* info, uint8_t len )](#int-mstransjoin-uint8_t-info-uint8_t-len-)
+   * [void mstrans.loop()](#void-mstransloop)
 
 
 ### int mstrans.init( SoftwareSerial& ss, InviteCb invcb, UserCb usercb )
