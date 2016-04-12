@@ -6,6 +6,7 @@
 #include "slave.h"
 
 char waiting_measure = 0;
+char waiting_write   = 0;
 
 inline int to_int(char bs[2]);
 inline char* from_int(int i);
@@ -82,6 +83,10 @@ int main(void)
     if(waiting_measure){
        slave_run_measure();
        waiting_measure = 0;
+    }
+    if(waiting_write){
+       slave_apply();
+       waiting_write = 0;
     }
     
   } while(1);      // Loop forever...
@@ -242,6 +247,7 @@ void do_action(char r)
       if(arg < slave_wcount )
       {
         slave_write( (char*)&incoming_packet[3], arg );
+        waiting_write   = 1;
         prep_ok();
       }
       else

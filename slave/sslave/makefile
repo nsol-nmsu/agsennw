@@ -25,12 +25,9 @@ extemp: FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 hum:    FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 adc:    FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 dummy:  FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
-<<<<<<< HEAD
 humtemp:FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
-wind:	FUSES = -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
-=======
-wind:	FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
->>>>>>> 6bd516f2c53284d0ced76eec138bdb218cf67246
+wind:	FUSES = -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+wind:	FUSES = -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 
 deploy: main.hex
 	avrdude -u -p t84 -c $(PROGRAMMER) -U flash:w:main.hex $(FUSES)
@@ -50,17 +47,14 @@ clean:
 hydra:  deploy hydra_slave.c
 intemp: deploy intemp_slave.c
 extemp: deploy extemp_slave.c
-<<<<<<< HEAD
 hum:    deploy hum_slave.c
 humtemp:deploy humtemp_slave.c
 adc:    deploy adc_slave.c
 dummy:  deploy dummy_slave.c
 wind:   deploy wind_sensor.c
-=======
 hum:   deploy hum_slave.c
 adc:   deploy adc_slave.c
 dummy: deploy dummy_slave.c
 wind:  deploy wind_slave.c
->>>>>>> 6bd516f2c53284d0ced76eec138bdb218cf67246
 
 

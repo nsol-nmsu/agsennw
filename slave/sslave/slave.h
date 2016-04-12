@@ -9,7 +9,7 @@ A slave implementation must implement all units declared in this file, including
 int   slave_id;                    //Unique slave id
 char* slave_type;                  //Slave type string
 char* slave_name;                  //Slave name
-char  slave_init_date[3];          //[day, month, year] where year is B.C - 2000
+char  slave_init_date[3];          //[day, month, year] where year is A.C - 2000
 char  slave_rcount;                //Readable channel count
 char  slave_wcount;                //Writable channel count
 char* slave_info;                  //Other information, description, etc.
@@ -31,6 +31,6 @@ int slave_write( const char* msg, unsigned ch );
 
 //If write opperations is buffered, this function applies the changes,
 // causing all writes to take effect.  Return non-zero on failure.
-int apply( unsigned ch );
+int slave_apply();
 
 #endif //_SLAVE_H_

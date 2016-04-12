@@ -50,7 +50,7 @@ int slave_write( const char* msg, unsigned ch )
         return 1;
 }
 
-int slave_apply( unsigned ch )
+int slave_apply()
 {
         return 1;
 };

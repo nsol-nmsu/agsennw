@@ -15,8 +15,7 @@ class MSTrans:
                 'GET'     : 3,
                 'OK'      : 4,
                 'INVITE'  : 5,
-                'ACCEPT'  : 6,
-                'RESET'   : 7 }
+                'ACCEPT'  : 6 }
 
         def __init__( self, tty, net, joinCb, segCb ):
                 self.tty    = tty
@@ -95,9 +94,9 @@ class MSTrans:
                 segnum = struct.unpack('<B', d[0] )[0]
                 self.segmentCb( s, segnum, d[1:] )
                 
-        def invite( self, slave ):
+        def invite( self, slave, info ):
                 try:
-                        data = struct.pack( "<BBB", self.ptype['INVITE'], 0, 0 )
+                        data = struct.pack( "<BB%ds"%len(info), self.ptype['INVITE'], 0, info )
                         data = data[0:1] + self._csum( data ) + data[2:] 
                         self.xbee.tx( dest_addr=slave, data=data )
                 except Exception, e:
@@ -124,7 +123,7 @@ class MSTrans:
 
         def user( self, addr, action ):
                 try:
-                        packet = struct.pack('<BBB', self.ptype['USER'], 0, 0 )
+                        packet = struct.pack('<BB%ds'%len(action), self.ptype['USER'], 0, action )
                         packet = packet[0:1] + self._csum( packet ) + packet[2:]
                         self.xbee.tx( dest_addr=addr, data=packet )
                 except Exception, e:
